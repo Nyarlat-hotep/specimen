@@ -1,16 +1,12 @@
 import './ui.css'
-import { FLOORS } from '../utils/isoMath.js'
 
-export function HUD({ activeZone, currentFloor }) {
-  const floor = FLOORS.find((f) => f.id === currentFloor) || FLOORS[0]
+export function HUD({ activeZone }) {
   return (
     <div className="hud" aria-hidden={!!activeZone}>
       <div className="hud-corner hud-tl">
         <div className="hud-title">SPECIMEN</div>
-        <div className="hud-sub" style={{ color: floor.color }}>
-          {floor.short} · {floor.name}
-        </div>
-        <div className="hud-sub">{floor.sub}</div>
+        <div className="hud-sub">FIELD MAP · ANOMALY SCAPE</div>
+        <div className="hud-sub">3 DISTRICTS · 15 ZONES</div>
       </div>
       <div className="hud-corner hud-tr">
         <div className="hud-tick">SCAN //</div>

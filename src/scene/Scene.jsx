@@ -3,19 +3,10 @@ import { EffectComposer, Bloom, Vignette } from '@react-three/postprocessing'
 import { IsoCamera } from './IsoCamera.jsx'
 import { GridFloor } from './GridFloor.jsx'
 import { PanController } from './PanController.jsx'
-import { Floor1Observatory } from './floors/Floor1Observatory.jsx'
-import { Floor2DeepSpecimen } from './floors/Floor2DeepSpecimen.jsx'
-import { Floor3AnomalyArchive } from './floors/Floor3AnomalyArchive.jsx'
+import { World } from './World.jsx'
 import { PAN_CLAMP_RADIUS } from '../utils/isoMath.js'
 
-const FLOOR_COMPONENTS = {
-  1: Floor1Observatory,
-  2: Floor2DeepSpecimen,
-  3: Floor3AnomalyArchive,
-}
-
 export function Scene({
-  currentFloor,
   activeZone,
   onZoneSelect,
   onBackgroundClick,
@@ -23,10 +14,8 @@ export function Scene({
   zoneState,
   panOffsetRef,
   zoomRef,
-  liftRef,
   panEnabled,
 }) {
-  const FloorComp = FLOOR_COMPONENTS[currentFloor] || Floor1Observatory
   return (
     <Canvas
       dpr={[1, 1.5]}
@@ -34,14 +23,12 @@ export function Scene({
       onPointerMissed={onBackgroundClick}
     >
       <color attach="background" args={['#000408']} />
-      <fog attach="fog" args={['#000408', 22, 60]} />
+      <fog attach="fog" args={['#000408', 28, 80]} />
       <IsoCamera
-        floor={currentFloor}
         activeZone={activeZone}
         isTouch={isTouch}
         panOffsetRef={panOffsetRef}
         zoomRef={zoomRef}
-        liftRef={liftRef}
       />
       <PanController
         enabled={panEnabled}
@@ -55,7 +42,7 @@ export function Scene({
 
       <GridFloor />
 
-      <FloorComp
+      <World
         activeZone={activeZone}
         onZoneSelect={onZoneSelect}
         zoneState={zoneState}

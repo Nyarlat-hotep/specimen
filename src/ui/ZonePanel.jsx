@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
-import { ZONES_BY_FLOOR } from '../utils/isoMath.js'
+import { findZone } from '../utils/isoMath.js'
 import { useClock } from '../hooks/useClock.js'
 import { WEEKDAY_LETTERS, useToday } from '../hooks/useToday.js'
 import { Timeline } from '../scene/zones/floor3/Timeline.jsx'
@@ -412,17 +412,17 @@ const CONTENT_BY_ZONE = {
 const VARIANTS_DESKTOP = { hidden: { x: '110%', opacity: 0 }, shown: { x: 0, opacity: 1 } }
 const VARIANTS_MOBILE  = { hidden: { y: '110%', opacity: 0 }, shown: { y: 0, opacity: 1 } }
 
-export function ZonePanel({ currentFloor, activeZone, onClose, isTouch, zoneState }) {
+export function ZonePanel({ activeZone, onClose, isTouch, zoneState }) {
   const variants = isTouch ? VARIANTS_MOBILE : VARIANTS_DESKTOP
   const className = `zone-panel ${isTouch ? 'mobile' : 'desktop'}`
-  const zone = activeZone ? ZONES_BY_FLOOR[currentFloor]?.[activeZone] : null
+  const zone = activeZone ? findZone(activeZone)?.zone : null
   const Body = activeZone ? CONTENT_BY_ZONE[activeZone] : null
 
   return (
     <AnimatePresence>
       {activeZone && zone && (
         <motion.aside
-          key={`${currentFloor}-${activeZone}`}
+          key={activeZone}
           className={className}
           initial="hidden"
           animate="shown"
