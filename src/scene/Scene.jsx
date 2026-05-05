@@ -2,71 +2,67 @@ import { Canvas } from '@react-three/fiber'
 import { EffectComposer, Bloom, Vignette } from '@react-three/postprocessing'
 import { IsoCamera } from './IsoCamera.jsx'
 import { GridFloor } from './GridFloor.jsx'
-import { PipingNetwork } from './PipingNetwork.jsx'
-import { AnomalyTerrain } from './zones/AnomalyTerrain.jsx'
-import { Equalizer } from './zones/Equalizer.jsx'
-import { SevenSegClock } from './zones/SevenSegClock.jsx'
-import { WeekdayStrip } from './zones/WeekdayStrip.jsx'
-import { CrystalCluster } from './zones/CrystalCluster.jsx'
+import { PanController } from './PanController.jsx'
+import { Floor1Observatory } from './floors/Floor1Observatory.jsx'
+import { Floor2DeepSpecimen } from './floors/Floor2DeepSpecimen.jsx'
+import { Floor3AnomalyArchive } from './floors/Floor3AnomalyArchive.jsx'
+import { PAN_CLAMP_RADIUS } from '../utils/isoMath.js'
+
+const FLOOR_COMPONENTS = {
+  1: Floor1Observatory,
+  2: Floor2DeepSpecimen,
+  3: Floor3AnomalyArchive,
+}
 
 export function Scene({
+  currentFloor,
   activeZone,
   onZoneSelect,
   onBackgroundClick,
   isTouch,
   zoneState,
+  panOffsetRef,
+  zoomRef,
+  liftRef,
+  panEnabled,
 }) {
+  const FloorComp = FLOOR_COMPONENTS[currentFloor] || Floor1Observatory
   return (
     <Canvas
-      dpr={[1, 2]}
+      dpr={[1, 1.5]}
       gl={{ antialias: true, alpha: false }}
       onPointerMissed={onBackgroundClick}
     >
       <color attach="background" args={['#000408']} />
       <fog attach="fog" args={['#000408', 22, 60]} />
-      <IsoCamera activeZone={activeZone} isTouch={isTouch} />
+      <IsoCamera
+        floor={currentFloor}
+        activeZone={activeZone}
+        isTouch={isTouch}
+        panOffsetRef={panOffsetRef}
+        zoomRef={zoomRef}
+        liftRef={liftRef}
+      />
+      <PanController
+        enabled={panEnabled}
+        panOffsetRef={panOffsetRef}
+        zoomRef={zoomRef}
+        panClampRadius={PAN_CLAMP_RADIUS}
+      />
 
       <ambientLight intensity={0.25} />
       <directionalLight position={[8, 12, 6]} intensity={0.6} color="#aaccff" />
-      <pointLight position={[-6, 6, -2]} intensity={0.8} color="#7ef058" distance={14} />
-      <pointLight position={[5, 5, 3]} intensity={0.7} color="#ff3a2a" distance={14} />
-      <pointLight position={[-5, 5, 4]} intensity={0.6} color="#3fefef" distance={14} />
 
       <GridFloor />
-      <PipingNetwork />
 
-      <AnomalyTerrain
-        onClick={onZoneSelect}
-        active={activeZone === 'ANOMALY'}
-        depth={zoneState.anomalyDepth}
-      />
-      <Equalizer
-        onClick={onZoneSelect}
-        active={activeZone === 'EQUALIZER'}
-        channel={zoneState.eqChannel}
-      />
-      <SevenSegClock
-        onClick={onZoneSelect}
-        active={activeZone === 'CLOCK'}
-      />
-      <WeekdayStrip
-        onClick={onZoneSelect}
-        active={activeZone === 'WEEKDAY'}
-      />
-      <CrystalCluster
-        onClick={onZoneSelect}
-        active={activeZone === 'CRYSTALS'}
-        selectedIndex={zoneState.crystalIndex}
-        onSelectCrystal={zoneState.onSelectCrystal}
+      <FloorComp
+        activeZone={activeZone}
+        onZoneSelect={onZoneSelect}
+        zoneState={zoneState}
       />
 
       <EffectComposer>
-        <Bloom
-          intensity={1.0}
-          luminanceThreshold={0.35}
-          luminanceSmoothing={0.4}
-          kernelSize={3}
-        />
+        <Bloom intensity={0.7} luminanceThreshold={0.55} luminanceSmoothing={0.4} kernelSize={3} mipmapBlur />
         <Vignette eskil={false} offset={0.3} darkness={0.7} />
       </EffectComposer>
     </Canvas>

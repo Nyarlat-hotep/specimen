@@ -4,18 +4,18 @@ import { Grid } from '@react-three/drei'
 export function GridFloor() {
   return (
     <Grid
-      position={[0, -0.01, 0]}
-      args={[60, 60]}
+      position={[0, -1.5, 0]}
+      args={[400, 400]}
       cellSize={0.5}
       cellThickness={0.6}
       cellColor="#0a4a52"
       sectionSize={2}
       sectionThickness={1.4}
       sectionColor="#16d4e8"
-      fadeDistance={28}
-      fadeStrength={1.2}
+      fadeDistance={200}
+      fadeStrength={0.9}
       followCamera={false}
-      infiniteGrid={false}
+      infiniteGrid={true}
     />
   )
 }
