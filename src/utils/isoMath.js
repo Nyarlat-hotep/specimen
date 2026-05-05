@@ -125,8 +125,9 @@ export const CROSS_DISTRICT_EDGES = [
   [2, 'VITALS',   3, 'TERMINAL'],   // bio → archive
 ]
 
-// Single wide view that frames all 3 districts.
-export const WIDE_VIEW = { target: [0, 0, 0], offset: [22, 18, 22], zoom: 30 }
+// Single wide view that frames all 3 districts. More top-down so the floor
+// grid carries to the bottom of the viewport rather than horizon-line cutoff.
+export const WIDE_VIEW = { target: [0, 0, 0], offset: [22, 28, 22], zoom: 32 }
 
 // Pan clamping radius — needs to reach the far districts.
 export const PAN_CLAMP_RADIUS = 36

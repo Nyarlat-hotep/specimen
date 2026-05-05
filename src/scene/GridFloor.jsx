@@ -1,19 +1,20 @@
 import { Grid } from '@react-three/drei'
 
-// Cyan procedural grid floor — drei's Grid component handles the receding-perspective look.
+// Cyan procedural grid floor — kept low-contrast so the district fog reads
+// as the dominant atmospheric layer.
 export function GridFloor() {
   return (
     <Grid
       position={[0, -1.5, 0]}
       args={[400, 400]}
       cellSize={0.5}
-      cellThickness={0.6}
-      cellColor="#0a4a52"
+      cellThickness={0.4}
+      cellColor="#063238"
       sectionSize={2}
-      sectionThickness={1.4}
-      sectionColor="#16d4e8"
-      fadeDistance={200}
-      fadeStrength={0.9}
+      sectionThickness={0.9}
+      sectionColor="#0a8a98"
+      fadeDistance={140}
+      fadeStrength={1.2}
       followCamera={false}
       infiniteGrid={true}
     />
