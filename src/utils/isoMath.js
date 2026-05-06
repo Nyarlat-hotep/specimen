@@ -92,29 +92,20 @@ export const DISTRICTS = [
 // can keep importing ZONES_BY_FLOOR[N].FOO unchanged).
 export const ZONES_BY_FLOOR = { 1: ZONES_OBSERVATORY, 2: ZONES_DEEP, 3: ZONES_ARCHIVE }
 
-// Intra-district piping. Source zone's color paints the segment.
+// Intra-district piping. Sparse, intentional spine routes — not a full mesh.
+// Source zone's color paints the segment.
 export const PIPING_BY_FLOOR = {
   1: [
     ['ANOMALY',   'EQUALIZER'],
-    ['WEEKDAY',   'CLOCK'],
     ['EQUALIZER', 'CRYSTALS'],
-    ['CLOCK',     'CRYSTALS'],
-    ['ANOMALY',   'WEEKDAY'],
   ],
   2: [
     ['MICROSCOPE', 'FLUID'],
     ['FLUID',      'CLASSIFIER'],
-    ['MICROSCOPE', 'SPECTRAL'],
-    ['CLASSIFIER', 'VITALS'],
-    ['SPECTRAL',   'VITALS'],
   ],
   3: [
-    ['TERMINAL',  'MAP'],
-    ['AUDIO',     'MAP'],
-    ['FEEDS',     'MAP'],
-    ['TIMELINE',  'MAP'],
-    ['TERMINAL',  'FEEDS'],
-    ['AUDIO',     'TIMELINE'],
+    ['TERMINAL', 'MAP'],
+    ['MAP',      'FEEDS'],
   ],
 }
 
