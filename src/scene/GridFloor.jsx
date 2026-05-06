@@ -1,7 +1,7 @@
 import { Grid } from '@react-three/drei'
 
-// Cyan procedural grid floor — kept low-contrast so the district fog reads
-// as the dominant atmospheric layer.
+// Dim amber grid — vintage CRT / print-poster floor that recedes into black
+// rather than competing with the zones above it.
 export function GridFloor() {
   return (
     <Grid
@@ -9,10 +9,10 @@ export function GridFloor() {
       args={[400, 400]}
       cellSize={0.5}
       cellThickness={0.4}
-      cellColor="#063238"
+      cellColor="#3a1408"
       sectionSize={2}
       sectionThickness={0.9}
-      sectionColor="#0a8a98"
+      sectionColor="#a04018"
       fadeDistance={140}
       fadeStrength={1.2}
       followCamera={false}
