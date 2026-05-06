@@ -5,31 +5,35 @@
 
 const std = (overrides) => ({ focusOffset: [6, 6, 6], zoom: 130, ...overrides })
 
-// ── Observatory zones (top of triangle) ────────────────────────────────
+// Vintage-poster palette: warm-dominant. One cool accent per district.
+// red:#c8210a  orange:#e8501a  amber:#ffa830  yellow:#ffd23a
+// cool accents: cyan:#3fcfd0  green:#4ad068
+
+// ── Observatory zones (top of triangle) — cyan accent on EQUALIZER ─────
 const ZONES_OBSERVATORY = {
-  ANOMALY:    std({ id:'ANOMALY',   title:'ANOMALY · UNKNOWN ENTITY', color:'#7ef058', center:[-6,0,-2], footprint:5,   zoom:110 }),
-  EQUALIZER:  std({ id:'EQUALIZER', title:'AUDIO · CHANNEL 01',       color:'#3fefef', center:[-5,0, 4], footprint:4 }),
-  CLOCK:      std({ id:'CLOCK',     title:'CHRONO · LOCAL TIME',      color:'#ff3a2a', center:[ 5,0, 3], footprint:4 }),
-  WEEKDAY:    std({ id:'WEEKDAY',   title:'CYCLE · WEEK',             color:'#3fefef', center:[ 6,0,-2], footprint:3.5, zoom:140 }),
+  ANOMALY:    std({ id:'ANOMALY',   title:'ANOMALY · UNKNOWN ENTITY', color:'#e8501a', center:[-6,0,-2], footprint:5,   zoom:110 }),
+  EQUALIZER:  std({ id:'EQUALIZER', title:'AUDIO · CHANNEL 01',       color:'#3fcfd0', center:[-5,0, 4], footprint:4 }),
+  CLOCK:      std({ id:'CLOCK',     title:'CHRONO · LOCAL TIME',      color:'#c8210a', center:[ 5,0, 3], footprint:4 }),
+  WEEKDAY:    std({ id:'WEEKDAY',   title:'CYCLE · WEEK',             color:'#ffa830', center:[ 6,0,-2], footprint:3.5, zoom:140 }),
   CRYSTALS:   std({ id:'CRYSTALS',  title:'INDEX · SAMPLES',          color:'#ffd23a', center:[ 0,0, 6], footprint:3.5, zoom:140 }),
 }
 
-// ── Deep Specimen zones (bottom-left) ──────────────────────────────────
+// ── Deep Specimen zones (bottom-left) — green accent on VITALS ────────
 const ZONES_DEEP = {
-  MICROSCOPE: std({ id:'MICROSCOPE', title:'MICROSCOPE · STAGE',      color:'#7ef058', center:[-6,0,-3], footprint:4 }),
-  FLUID:      std({ id:'FLUID',      title:'PETRI · NUTRIENT FLOW',   color:'#3fefef', center:[ 0,0,-3], footprint:4 }),
+  MICROSCOPE: std({ id:'MICROSCOPE', title:'MICROSCOPE · STAGE',      color:'#c8210a', center:[-6,0,-3], footprint:4 }),
+  FLUID:      std({ id:'FLUID',      title:'PETRI · NUTRIENT FLOW',   color:'#ffa830', center:[ 0,0,-3], footprint:4 }),
   CLASSIFIER: std({ id:'CLASSIFIER', title:'CLASSIFIER · SAMPLE',     color:'#ffd23a', center:[ 6,0,-3], footprint:4 }),
-  SPECTRAL:   std({ id:'SPECTRAL',   title:'SPECTRAL · ABSORPTION',   color:'#ff8a3a', center:[-4,0, 4], footprint:5 }),
-  VITALS:     std({ id:'VITALS',     title:'VITALS · LIVE',           color:'#ff3a3a', center:[ 4,0, 4], footprint:5 }),
+  SPECTRAL:   std({ id:'SPECTRAL',   title:'SPECTRAL · ABSORPTION',   color:'#e8501a', center:[-4,0, 4], footprint:5 }),
+  VITALS:     std({ id:'VITALS',     title:'VITALS · LIVE',           color:'#4ad068', center:[ 4,0, 4], footprint:5 }),
 }
 
-// ── Anomaly Archive zones (bottom-right) ──────────────────────────────
+// ── Anomaly Archive zones (bottom-right) — cyan accent on FEEDS ──────
 const ZONES_ARCHIVE = {
-  TERMINAL:   std({ id:'TERMINAL',  title:'TERMINAL · LOG STREAM',    color:'#7ef058', center:[-6,0, 0], footprint:4 }),
-  FEEDS:      std({ id:'FEEDS',     title:'SURVEILLANCE · 4×',        color:'#3fefef', center:[ 0,0,-5], footprint:5 }),
-  TIMELINE:   std({ id:'TIMELINE',  title:'TIMELINE · SCRUBBER',      color:'#ffd23a', center:[ 0,0, 5], footprint:5 }),
-  AUDIO:      std({ id:'AUDIO',     title:'AUDIO · TAPE INDEX',       color:'#ff8a3a', center:[ 6,0, 0], footprint:4 }),
-  MAP:        std({ id:'MAP',       title:'SITE MAP · COLLECTION',    color:'#3fefef', center:[ 0,0, 0], footprint:4, zoom:160 }),
+  TERMINAL:   std({ id:'TERMINAL',  title:'TERMINAL · LOG STREAM',    color:'#c8210a', center:[-6,0, 0], footprint:4 }),
+  FEEDS:      std({ id:'FEEDS',     title:'SURVEILLANCE · 4×',        color:'#3fcfd0', center:[ 0,0,-5], footprint:5 }),
+  TIMELINE:   std({ id:'TIMELINE',  title:'TIMELINE · SCRUBBER',      color:'#ffa830', center:[ 0,0, 5], footprint:5 }),
+  AUDIO:      std({ id:'AUDIO',     title:'AUDIO · TAPE INDEX',       color:'#e8501a', center:[ 6,0, 0], footprint:4 }),
+  MAP:        std({ id:'MAP',       title:'SITE MAP · COLLECTION',    color:'#ffd23a', center:[ 0,0, 0], footprint:4, zoom:160 }),
 }
 
 // District definitions — each has its own offset on the world plane, color
@@ -40,46 +44,46 @@ export const DISTRICTS = [
     id: 1,
     name: 'OBSERVATORY',
     short: '01',
-    color: '#3fefef',
+    color: '#ffa830',
     sub: 'WIDE-FIELD SCAN',
     offset: [0, 0, -16],
     zones: ZONES_OBSERVATORY,
     lights: [
-      { position: [-6, 6, -2], intensity: 0.8, color: '#7ef058', distance: 14 },
-      { position: [ 5, 5,  3], intensity: 0.7, color: '#ff3a2a', distance: 14 },
-      { position: [-5, 5,  4], intensity: 0.6, color: '#3fefef', distance: 14 },
+      { position: [-6, 6, -2], intensity: 0.8, color: '#e8501a', distance: 14 },
+      { position: [ 5, 5,  3], intensity: 0.7, color: '#c8210a', distance: 14 },
+      { position: [-5, 5,  4], intensity: 0.5, color: '#3fcfd0', distance: 12 },
     ],
   },
   {
     id: 2,
     name: 'DEEP SPECIMEN',
     short: '02',
-    color: '#7ef058',
+    color: '#c8210a',
     sub: 'BIO INSTRUMENTATION',
     offset: [-15, 0, 10],
     zones: ZONES_DEEP,
     lights: [
-      { position: [-6, 6, -3], intensity: 0.7, color: '#7ef058', distance: 14 },
-      { position: [ 0, 6, -3], intensity: 0.6, color: '#3fefef', distance: 14 },
+      { position: [-6, 6, -3], intensity: 0.7, color: '#c8210a', distance: 14 },
+      { position: [ 0, 6, -3], intensity: 0.6, color: '#ffa830', distance: 14 },
       { position: [ 6, 6, -3], intensity: 0.7, color: '#ffd23a', distance: 14 },
-      { position: [-4, 5,  4], intensity: 0.6, color: '#ff8a3a', distance: 14 },
-      { position: [ 4, 5,  4], intensity: 0.6, color: '#ff3a3a', distance: 14 },
+      { position: [-4, 5,  4], intensity: 0.6, color: '#e8501a', distance: 14 },
+      { position: [ 4, 5,  4], intensity: 0.5, color: '#4ad068', distance: 12 },
     ],
   },
   {
     id: 3,
     name: 'ANOMALY ARCHIVE',
     short: '03',
-    color: '#ffd23a',
+    color: '#e8501a',
     sub: 'RECORDS · TELEMETRY',
     offset: [15, 0, 10],
     zones: ZONES_ARCHIVE,
     lights: [
-      { position: [-6, 6,  0], intensity: 0.7, color: '#7ef058', distance: 14 },
-      { position: [ 0, 6, -5], intensity: 0.7, color: '#3fefef', distance: 14 },
+      { position: [-6, 6,  0], intensity: 0.7, color: '#c8210a', distance: 14 },
+      { position: [ 0, 6, -5], intensity: 0.5, color: '#3fcfd0', distance: 12 },
       { position: [ 0, 6,  5], intensity: 0.7, color: '#ffd23a', distance: 14 },
-      { position: [ 6, 6,  0], intensity: 0.7, color: '#ff8a3a', distance: 14 },
-      { position: [ 0, 7,  0], intensity: 0.5, color: '#3fefef', distance: 10 },
+      { position: [ 6, 6,  0], intensity: 0.7, color: '#e8501a', distance: 14 },
+      { position: [ 0, 7,  0], intensity: 0.6, color: '#ffa830', distance: 12 },
     ],
   },
 ]

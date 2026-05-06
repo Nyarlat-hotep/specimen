@@ -3,6 +3,7 @@ import * as THREE from 'three'
 import {
   DISTRICTS,
   CROSS_DISTRICT_EDGES,
+  FLOOR_SCALE,
   getZoneWorldCenter,
   findZone,
 } from '../utils/isoMath.js'
@@ -22,6 +23,17 @@ function District({ district, activeZone, onZoneSelect, zoneState }) {
   const FloorComp = FLOOR_COMPONENTS[district.id]
   return (
     <group position={district.offset}>
+      <group scale={[FLOOR_SCALE, FLOOR_SCALE, FLOOR_SCALE]}>
+        {district.lights.map((l, i) => (
+          <pointLight
+            key={i}
+            position={l.position}
+            intensity={l.intensity}
+            color={l.color}
+            distance={l.distance}
+          />
+        ))}
+      </group>
       <FloorComp
         activeZone={activeZone}
         onZoneSelect={onZoneSelect}

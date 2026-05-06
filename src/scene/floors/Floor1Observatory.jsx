@@ -9,10 +9,6 @@ import { CrystalCluster } from '../zones/CrystalCluster.jsx'
 export function Floor1Observatory({ activeZone, onZoneSelect, zoneState }) {
   return (
     <group scale={[FLOOR_SCALE, FLOOR_SCALE, FLOOR_SCALE]}>
-      <pointLight position={[-6, 6, -2]} intensity={0.8} color="#7ef058" distance={14} />
-      <pointLight position={[ 5, 5,  3]} intensity={0.7} color="#ff3a2a" distance={14} />
-      <pointLight position={[-5, 5,  4]} intensity={0.6} color="#3fefef" distance={14} />
-
       <PipingNetwork zones={ZONES_BY_FLOOR[1]} edges={PIPING_BY_FLOOR[1]} />
 
       <AnomalyTerrain
