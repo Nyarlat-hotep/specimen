@@ -1,6 +1,5 @@
 import { Canvas } from '@react-three/fiber'
-import { EffectComposer, Bloom, Vignette, Noise } from '@react-three/postprocessing'
-import { BlendFunction } from 'postprocessing'
+import { EffectComposer, Bloom, Vignette } from '@react-three/postprocessing'
 import { IsoCamera } from './IsoCamera.jsx'
 import { GridFloor } from './GridFloor.jsx'
 import { PanController } from './PanController.jsx'
@@ -51,7 +50,6 @@ export function Scene({
 
       <EffectComposer>
         <Bloom intensity={1.4} luminanceThreshold={0.25} luminanceSmoothing={0.7} kernelSize={5} mipmapBlur />
-        <Noise premultiply blendFunction={BlendFunction.OVERLAY} opacity={0.55} />
         <Vignette eskil={false} offset={0.25} darkness={0.85} />
       </EffectComposer>
     </Canvas>

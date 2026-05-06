@@ -75,6 +75,7 @@ export default function App() {
         isTouch={isTouch}
         zoneState={zoneState}
       />
+      <div className="noise-overlay" aria-hidden="true" />
     </div>
   )
 }
