@@ -22,8 +22,8 @@ export function Scene({
       gl={{ antialias: true, alpha: false }}
       onPointerMissed={onBackgroundClick}
     >
-      <color attach="background" args={['#000408']} />
-      <fog attach="fog" args={['#000408', 28, 80]} />
+      <color attach="background" args={['#080402']} />
+      <fog attach="fog" args={['#080402', 28, 80]} />
       <IsoCamera
         activeZone={activeZone}
         isTouch={isTouch}
