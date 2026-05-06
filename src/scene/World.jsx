@@ -7,7 +7,6 @@ import {
   getZoneWorldCenter,
   findZone,
 } from '../utils/isoMath.js'
-import { Decorations } from './Decorations.jsx'
 import { Floor1Observatory } from './floors/Floor1Observatory.jsx'
 import { Floor2DeepSpecimen } from './floors/Floor2DeepSpecimen.jsx'
 import { Floor3AnomalyArchive } from './floors/Floor3AnomalyArchive.jsx'
@@ -101,7 +100,6 @@ export function World({ activeZone, onZoneSelect, zoneState }) {
         />
       ))}
       <CrossDistrictPiping />
-      <Decorations />
     </>
   )
 }
