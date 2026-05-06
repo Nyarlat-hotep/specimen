@@ -43,19 +43,37 @@ function District({ district, activeZone, onZoneSelect, zoneState }) {
   )
 }
 
-// Diagonal world-space bridges between districts — drawn dimmer/thinner than
-// intra-district piping so the triangle reads as one network without competing.
+// Cross-district connectors. L-shape axis-aligned (no diagonals) with radius
+// + emissive intensity matched to intra-district piping so all pipes read as
+// one consistent network. Intra-district pipes are rendered inside a
+// FLOOR_SCALE=1.5 group, so their 0.06 radius appears as 0.09 in world units;
+// cross-district pipes at world root use 0.09 directly.
+const PIPE_RADIUS_WORLD = 0.09
+const PIPE_Y = 0.09
+
 function CrossDistrictPiping() {
   const segments = useMemo(() => {
-    const out = []
+    const raw = []
     for (const [fromD, fromZ, toD, toZ] of CROSS_DISTRICT_EDGES) {
       const a = findZone(fromZ)
       const b = findZone(toZ)
       if (!a || !b || a.district.id !== fromD || b.district.id !== toD) continue
       const aw = getZoneWorldCenter(fromZ)
       const bw = getZoneWorldCenter(toZ)
-      const s = new THREE.Vector3(aw[0], 0.06, aw[2])
-      const e = new THREE.Vector3(bw[0], 0.06, bw[2])
+      const fa = (a.zone.footprint / 2 + 0.4) * FLOOR_SCALE
+      const fb = (b.zone.footprint / 2 + 0.4) * FLOOR_SCALE
+      const dx = Math.sign(bw[0] - aw[0]) || 1
+      const dz = Math.sign(bw[2] - aw[2]) || 1
+      const start  = [aw[0] + dx * fa, PIPE_Y, aw[2]]
+      const corner = [bw[0],            PIPE_Y, aw[2]]
+      const end    = [bw[0],            PIPE_Y, bw[2] - dz * fb]
+      raw.push({ start, end: corner, color: a.zone.color })
+      raw.push({ start: corner, end, color: a.zone.color })
+    }
+    const built = []
+    for (const { start, end, color } of raw) {
+      const s = new THREE.Vector3(...start)
+      const e = new THREE.Vector3(...end)
       const dir = e.clone().sub(s)
       const len = dir.length()
       if (len < 0.001) continue
@@ -64,22 +82,20 @@ function CrossDistrictPiping() {
         new THREE.Vector3(0, 1, 0),
         dir.clone().normalize()
       )
-      out.push({ mid: mid.toArray(), length: len, quaternion: q, color: a.zone.color })
+      built.push({ mid: mid.toArray(), length: len, quaternion: q, color })
     }
-    return out
+    return built
   }, [])
   return (
     <group>
       {segments.map((s, i) => (
         <mesh key={i} position={s.mid} quaternion={s.quaternion}>
-          <cylinderGeometry args={[0.04, 0.04, s.length, 8]} />
+          <cylinderGeometry args={[PIPE_RADIUS_WORLD, PIPE_RADIUS_WORLD, s.length, 8]} />
           <meshStandardMaterial
             color="#0a0204"
             emissive={s.color}
-            emissiveIntensity={1.4}
+            emissiveIntensity={2.4}
             toneMapped={false}
-            transparent
-            opacity={0.55}
           />
         </mesh>
       ))}
