@@ -37,8 +37,8 @@ export function Scene({
         panClampRadius={PAN_CLAMP_RADIUS}
       />
 
-      <ambientLight intensity={0.25} />
-      <directionalLight position={[8, 12, 6]} intensity={0.6} color="#aaccff" />
+      <ambientLight intensity={0.04} />
+      <directionalLight position={[8, 12, 6]} intensity={0.12} color="#ffb070" />
 
       <GridFloor />
 
