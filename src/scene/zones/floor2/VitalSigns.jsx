@@ -136,11 +136,11 @@ export function VitalSigns({ onClick, active }) {
 
       {/* ECG line */}
       <line geometry={ecgGeom} position={[-0.08, PANEL_CY, 0]}>
-        <lineBasicMaterial color="#ff3a3a" toneMapped={false} linewidth={2} />
+        <lineBasicMaterial color="#c8210a" toneMapped={false} linewidth={2} />
       </line>
       {/* Respiration line */}
       <line geometry={respGeom} position={[-0.08, PANEL_CY, 0]}>
-        <lineBasicMaterial color="#3fefef" toneMapped={false} linewidth={2} />
+        <lineBasicMaterial color="#3fcfd0" toneMapped={false} linewidth={2} />
       </line>
 
       {/* Right-side gauge cluster */}
@@ -153,12 +153,12 @@ export function VitalSigns({ onClick, active }) {
         {/* Pulsing inner gauge */}
         <mesh ref={gaugeRef} position={[0, 0.15, 0.01]}>
           <sphereGeometry args={[0.12, 16, 16]} />
-          <meshStandardMaterial color="#3a0606" emissive="#ff3a3a" emissiveIntensity={2.2} toneMapped={false} />
+          <meshStandardMaterial color="#3a0606" emissive="#c8210a" emissiveIntensity={2.2} toneMapped={false} />
         </mesh>
         {/* Sweeping pulse ring */}
         <mesh ref={pulseRingRef} position={[0, -0.20, 0.005]}>
           <ringGeometry args={[0.10, 0.12, 32, 1, 0, Math.PI * 1.5]} />
-          <meshStandardMaterial color="#000" emissive="#3fefef" emissiveIntensity={1.2} side={THREE.DoubleSide} toneMapped={false} />
+          <meshStandardMaterial color="#000" emissive="#3fcfd0" emissiveIntensity={1.2} side={THREE.DoubleSide} toneMapped={false} />
         </mesh>
       </group>
 
@@ -198,7 +198,7 @@ export function VitalSigns({ onClick, active }) {
           <sphereGeometry args={[0.024, 12, 12]} />
           <meshStandardMaterial
             color="#000"
-            emissive={i === 0 ? '#ff3a3a' : i === 5 ? '#3fefef' : z.color}
+            emissive={i === 0 ? '#c8210a' : i === 5 ? '#3fcfd0' : z.color}
             emissiveIntensity={2.4}
             toneMapped={false}
           />

@@ -113,7 +113,7 @@ export function AudioRecordings({ onClick, active, playingIndex }) {
           <sphereGeometry args={[0.022, 12, 12]} />
           <meshStandardMaterial
             color="#000"
-            emissive={i === 4 ? '#3fefef' : z.color}
+            emissive={i === 4 ? '#3fcfd0' : z.color}
             emissiveIntensity={2.4}
             toneMapped={false}
           />
@@ -132,7 +132,7 @@ export function AudioRecordings({ onClick, active, playingIndex }) {
             <RoundedBox args={[TAPE_W, TAPE_H, 0.06]} radius={0.02} smoothness={3}>
               <meshStandardMaterial
                 color="#02100a"
-                emissive={isPlaying ? '#3fefef' : z.color}
+                emissive={isPlaying ? '#3fcfd0' : z.color}
                 emissiveIntensity={isPlaying ? 2.0 : 0.6}
                 toneMapped={false}
               />

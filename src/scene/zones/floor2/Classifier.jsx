@@ -94,7 +94,7 @@ export function Classifier({ onClick, active, sampleIndex }) {
     onClick('CLASSIFIER')
   }
 
-  const sampleColors = ['#ffd23a', '#7ef058', '#3fefef', '#ff8a3a', '#ff3a3a']
+  const sampleColors = ['#ffd23a', '#4ad068', '#3fcfd0', '#e8501a', '#c8210a']
   const tint = sampleColors[sampleIndex] || z.color
 
   return (
@@ -133,7 +133,7 @@ export function Classifier({ onClick, active, sampleIndex }) {
         </mesh>
         <mesh position={[0.18, 0.05, 0.04]}>
           <planeGeometry args={[0.30, 0.18]} />
-          <meshStandardMaterial color="#000" emissive="#3fefef" emissiveIntensity={1.5} toneMapped={false} />
+          <meshStandardMaterial color="#000" emissive="#3fcfd0" emissiveIntensity={1.5} toneMapped={false} />
         </mesh>
         {/* Bottom-row knobs */}
         {[-0.55, -0.40, -0.25, 0.45, 0.60].map((x, i) => (
@@ -194,7 +194,7 @@ export function Classifier({ onClick, active, sampleIndex }) {
           <sphereGeometry args={[0.024, 12, 12]} />
           <meshStandardMaterial
             color="#000"
-            emissive={i === 2 ? '#ff3a3a' : z.color}
+            emissive={i === 2 ? '#c8210a' : z.color}
             emissiveIntensity={2.4}
             toneMapped={false}
           />

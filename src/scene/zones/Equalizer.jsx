@@ -129,7 +129,7 @@ export function Equalizer({ onClick, active, channel = 0 }) {
           >
             <meshStandardMaterial
               color="#2a1206"
-              emissive="#ff8a3a"
+              emissive="#e8501a"
               emissiveIntensity={2.4}
               toneMapped={false}
             />
@@ -143,7 +143,7 @@ export function Equalizer({ onClick, active, channel = 0 }) {
           <sphereGeometry args={[0.024, 12, 12]} />
           <meshStandardMaterial
             color="#000"
-            emissive={i === 2 ? '#ff8a3a' : color}
+            emissive={i === 2 ? '#e8501a' : color}
             emissiveIntensity={2.4}
             toneMapped={false}
           />
@@ -163,7 +163,7 @@ export function Equalizer({ onClick, active, channel = 0 }) {
         {/* Needle */}
         <mesh ref={needleRef} position={[0, 0, 0.01]}>
           <boxGeometry args={[0.005, 0.12, 0.005]} />
-          <meshStandardMaterial color="#000" emissive="#ff3a3a" emissiveIntensity={3} toneMapped={false} />
+          <meshStandardMaterial color="#000" emissive="#c8210a" emissiveIntensity={3} toneMapped={false} />
         </mesh>
       </group>
 

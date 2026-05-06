@@ -105,7 +105,7 @@ export function Microscope({ onClick, active }) {
           <sphereGeometry args={[0.026, 12, 12]} />
           <meshStandardMaterial
             color="#000"
-            emissive={i % 2 ? '#3fefef' : '#7ef058'}
+            emissive={i % 2 ? '#3fcfd0' : '#4ad068'}
             emissiveIntensity={2.5}
             toneMapped={false}
           />
@@ -134,15 +134,15 @@ export function Microscope({ onClick, active }) {
       {/* Specimen disc */}
       <mesh ref={lensRef} position={[0, 0.30, 0]}>
         <cylinderGeometry args={[0.34, 0.34, 0.04, 32]} />
-        <meshStandardMaterial color="#020404" emissive="#7ef058" emissiveIntensity={1.6} toneMapped={false} />
+        <meshStandardMaterial color="#020404" emissive="#4ad068" emissiveIntensity={1.6} toneMapped={false} />
       </mesh>
 
       {/* Glass dome over specimen — hemisphere */}
       <mesh position={[0, 0.32, 0]}>
         <sphereGeometry args={[0.34, 32, 16, 0, Math.PI * 2, 0, Math.PI / 2]} />
         <meshStandardMaterial
-          color="#3fefef"
-          emissive="#3fefef"
+          color="#3fcfd0"
+          emissive="#3fcfd0"
           emissiveIntensity={0.25}
           transparent
           opacity={0.16}
@@ -185,7 +185,7 @@ export function Microscope({ onClick, active }) {
       {/* Eyepiece (lathe) — angled toward viewer */}
       <mesh position={[0.20, 1.10, -0.35]} rotation={[0, 0, -0.4]}>
         <latheGeometry args={[EYEPIECE_PROFILE, 24]} />
-        <meshStandardMaterial color="#02100a" emissive="#3fefef" emissiveIntensity={1.4} toneMapped={false} />
+        <meshStandardMaterial color="#02100a" emissive="#3fcfd0" emissiveIntensity={1.4} toneMapped={false} />
       </mesh>
 
       {/* Objective lens (lathe) — wide cap below, narrow neck up to arm */}

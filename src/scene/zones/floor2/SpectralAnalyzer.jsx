@@ -75,7 +75,7 @@ export function SpectralAnalyzer({ onClick, active, band = 1 }) {
     onClick('SPECTRAL')
   }
 
-  const bandColor = band === 0 ? '#ff5a3a' : band === 1 ? '#ffd23a' : '#a866ff'
+  const bandColor = band === 0 ? '#e8501a' : band === 1 ? '#ffd23a' : '#3fcfd0'
 
   return (
     <group
@@ -117,7 +117,7 @@ export function SpectralAnalyzer({ onClick, active, band = 1 }) {
       {/* Sweep cursor */}
       <mesh ref={sweepRef} position={[0, PANEL_CY, PANEL_D / 2 + 0.012]}>
         <boxGeometry args={[0.02, PANEL_H * 0.78, 0.005]} />
-        <meshStandardMaterial color="#fff" emissive="#3fefef" emissiveIntensity={3.0} toneMapped={false} />
+        <meshStandardMaterial color="#fff" emissive="#3fcfd0" emissiveIntensity={3.0} toneMapped={false} />
       </mesh>
 
       {/* Tick marks */}
@@ -167,7 +167,7 @@ export function SpectralAnalyzer({ onClick, active, band = 1 }) {
             <sphereGeometry args={[0.022, 12, 12]} />
             <meshStandardMaterial
               color="#000"
-              emissive={i === 6 ? '#ff3a3a' : i === 5 ? '#ff8a3a' : i >= 3 ? '#ffd23a' : z.color}
+              emissive={i === 6 ? '#c8210a' : i === 5 ? '#e8501a' : i >= 3 ? '#ffd23a' : z.color}
               emissiveIntensity={2.5}
               toneMapped={false}
             />
@@ -181,7 +181,7 @@ export function SpectralAnalyzer({ onClick, active, band = 1 }) {
           <sphereGeometry args={[0.022, 12, 12]} />
           <meshStandardMaterial
             color="#000"
-            emissive={i === 2 ? '#3fefef' : z.color}
+            emissive={i === 2 ? '#3fcfd0' : z.color}
             emissiveIntensity={2.4}
             toneMapped={false}
           />

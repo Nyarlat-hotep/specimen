@@ -158,7 +158,7 @@ export function Surveillance({ onClick, active }) {
           <sphereGeometry args={[0.022, 12, 12]} />
           <meshStandardMaterial
             color="#000"
-            emissive={i % 2 ? '#3fefef' : z.color}
+            emissive={i % 2 ? '#3fcfd0' : z.color}
             emissiveIntensity={2.4}
             toneMapped={false}
           />

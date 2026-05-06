@@ -64,7 +64,7 @@ function Digit({ value, position }) {
             <boxGeometry args={[sx, sy, sz]} />
             <meshStandardMaterial
               color="#250604"
-              emissive="#ff3a1f"
+              emissive="#c8210a"
               emissiveIntensity={isLit ? 3.2 : 0.05}
               toneMapped={false}
             />
@@ -115,7 +115,7 @@ export function SevenSegClock({ onClick, active }) {
       {[-spacing * 1.5, spacing * 1.5].map((x, i) => (
         <mesh key={i} position={[x, -DIGIT_H / 2 - 0.32, 0]}>
           <latheGeometry args={[FOOT_PROFILE, 16]} />
-          <meshStandardMaterial color="#1a0606" emissive="#ff3a1f" emissiveIntensity={0.5} />
+          <meshStandardMaterial color="#1a0606" emissive="#c8210a" emissiveIntensity={0.5} />
         </mesh>
       ))}
 
@@ -126,13 +126,13 @@ export function SevenSegClock({ onClick, active }) {
         smoothness={3}
         position={[0, -DIGIT_H / 2 - 0.20, 0]}
       >
-        <meshStandardMaterial color="#1a0606" emissive="#ff3a1f" emissiveIntensity={0.5} />
+        <meshStandardMaterial color="#1a0606" emissive="#c8210a" emissiveIntensity={0.5} />
       </RoundedBox>
 
       {/* Plinth front trim */}
       <mesh position={[0, -DIGIT_H / 2 - 0.13, DIGIT_H / 2 + 0.29]}>
         <boxGeometry args={[chassisW + 0.38, 0.012, 0.018]} />
-        <meshStandardMaterial color="#000" emissive="#ff3a1f" emissiveIntensity={3} toneMapped={false} />
+        <meshStandardMaterial color="#000" emissive="#c8210a" emissiveIntensity={3} toneMapped={false} />
       </mesh>
 
       {/* Indicator beads */}
@@ -141,7 +141,7 @@ export function SevenSegClock({ onClick, active }) {
           <sphereGeometry args={[0.026, 12, 12]} />
           <meshStandardMaterial
             color="#000"
-            emissive="#ff3a1f"
+            emissive="#c8210a"
             emissiveIntensity={2.4}
             toneMapped={false}
           />
@@ -155,7 +155,7 @@ export function SevenSegClock({ onClick, active }) {
         smoothness={3}
         position={[0, chassisY, -0.16]}
       >
-        <meshStandardMaterial color="#0a0202" emissive="#ff3a1f" emissiveIntensity={0.4} />
+        <meshStandardMaterial color="#0a0202" emissive="#c8210a" emissiveIntensity={0.4} />
       </RoundedBox>
 
       {/* Inset bezel — surrounds the digits */}
@@ -165,7 +165,7 @@ export function SevenSegClock({ onClick, active }) {
         smoothness={3}
         position={[0, chassisY, -0.04]}
       >
-        <meshStandardMaterial color="#06010a" emissive="#ff3a1f" emissiveIntensity={0.5} />
+        <meshStandardMaterial color="#06010a" emissive="#c8210a" emissiveIntensity={0.5} />
       </RoundedBox>
 
       {/* Recessed dark screen behind digits */}
@@ -177,7 +177,7 @@ export function SevenSegClock({ onClick, active }) {
       {/* Top glow strip on chassis */}
       <mesh position={[0, chassisY + chassisH / 2 + 0.01, -0.05]}>
         <boxGeometry args={[chassisW * 0.94, 0.012, 0.018]} />
-        <meshStandardMaterial color="#000" emissive="#ff3a1f" emissiveIntensity={3} toneMapped={false} />
+        <meshStandardMaterial color="#000" emissive="#c8210a" emissiveIntensity={3} toneMapped={false} />
       </mesh>
 
       {/* Digits */}
@@ -189,18 +189,18 @@ export function SevenSegClock({ onClick, active }) {
       {/* Colon */}
       <mesh position={[0, chassisY + DIGIT_H / 5, 0]} ref={colonRef}>
         <boxGeometry args={[SEG_T, SEG_T, SEG_T]} />
-        <meshStandardMaterial color="#250604" emissive="#ff3a1f" emissiveIntensity={3.2} toneMapped={false} />
+        <meshStandardMaterial color="#250604" emissive="#c8210a" emissiveIntensity={3.2} toneMapped={false} />
       </mesh>
       <mesh position={[0, chassisY - DIGIT_H / 5, 0]}>
         <boxGeometry args={[SEG_T, SEG_T, SEG_T]} />
-        <meshStandardMaterial color="#250604" emissive="#ff3a1f" emissiveIntensity={3.2} toneMapped={false} />
+        <meshStandardMaterial color="#250604" emissive="#c8210a" emissiveIntensity={3.2} toneMapped={false} />
       </mesh>
 
       {/* Side knobs — left & right wing */}
       {[-chassisW / 2 - 0.005, chassisW / 2 + 0.005].map((x, i) => (
         <mesh key={i} position={[x, chassisY, 0]} rotation={[0, i === 0 ? -Math.PI / 2 : Math.PI / 2, 0]}>
           <latheGeometry args={[KNOB_PROFILE, 16]} />
-          <meshStandardMaterial color="#0a0202" emissive="#ff3a1f" emissiveIntensity={1.6} toneMapped={false} />
+          <meshStandardMaterial color="#0a0202" emissive="#c8210a" emissiveIntensity={1.6} toneMapped={false} />
         </mesh>
       ))}
 

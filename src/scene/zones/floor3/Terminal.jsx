@@ -68,7 +68,7 @@ export function Terminal({ onClick, active }) {
           <sphereGeometry args={[0.022, 12, 12]} />
           <meshStandardMaterial
             color="#000"
-            emissive={i === 1 ? '#3fefef' : z.color}
+            emissive={i === 1 ? '#3fcfd0' : z.color}
             emissiveIntensity={2.4}
             toneMapped={false}
           />
@@ -89,7 +89,7 @@ export function Terminal({ onClick, active }) {
       {/* Tower power LED */}
       <mesh position={[-0.78, 0.78, -0.30 + 0.205]}>
         <sphereGeometry args={[0.022, 12, 12]} />
-        <meshStandardMaterial color="#000" emissive="#3fefef" emissiveIntensity={3} toneMapped={false} />
+        <meshStandardMaterial color="#000" emissive="#3fcfd0" emissiveIntensity={3} toneMapped={false} />
       </mesh>
 
       {/* Tilted screen */}

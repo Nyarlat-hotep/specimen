@@ -57,30 +57,30 @@ export function WeekdayStrip({ onClick, active }) {
       {[-FRAME_W / 2 + 0.10, FRAME_W / 2 - 0.10].map((x, i) => (
         <mesh key={i} position={[x, 0, 0]}>
           <latheGeometry args={[FOOT_PROFILE, 16]} />
-          <meshStandardMaterial color="#062b30" emissive="#3fefef" emissiveIntensity={0.5} />
+          <meshStandardMaterial color="#062b30" emissive="#3fcfd0" emissiveIntensity={0.5} />
         </mesh>
       ))}
 
       {/* Chamfered chassis */}
       <RoundedBox args={[FRAME_W, FRAME_H, FRAME_D]} radius={0.05} smoothness={3} position={[0, 0.18 + FRAME_H / 2, 0]}>
-        <meshStandardMaterial color="#062b30" emissive="#3fefef" emissiveIntensity={0.5} />
+        <meshStandardMaterial color="#062b30" emissive="#3fcfd0" emissiveIntensity={0.5} />
       </RoundedBox>
 
       {/* Inset bezel */}
       <RoundedBox args={[FRAME_W * 0.94, FRAME_H * 0.86, 0.04]} radius={0.04} smoothness={3} position={[0, 0.18 + FRAME_H / 2, FRAME_D / 2 - 0.01]}>
-        <meshStandardMaterial color="#03171c" emissive="#3fefef" emissiveIntensity={0.5} />
+        <meshStandardMaterial color="#03171c" emissive="#3fcfd0" emissiveIntensity={0.5} />
       </RoundedBox>
 
       {/* Top trim glow */}
       <mesh position={[0, 0.18 + FRAME_H + 0.01, FRAME_D * 0.30]}>
         <boxGeometry args={[FRAME_W * 0.92, 0.012, 0.018]} />
-        <meshStandardMaterial color="#000" emissive="#3fefef" emissiveIntensity={3} toneMapped={false} />
+        <meshStandardMaterial color="#000" emissive="#3fcfd0" emissiveIntensity={3} toneMapped={false} />
       </mesh>
 
       {/* Bottom trim glow */}
       <mesh position={[0, 0.18, FRAME_D * 0.30]}>
         <boxGeometry args={[FRAME_W * 0.92, 0.012, 0.018]} />
-        <meshStandardMaterial color="#000" emissive="#3fefef" emissiveIntensity={2.2} toneMapped={false} />
+        <meshStandardMaterial color="#000" emissive="#3fcfd0" emissiveIntensity={2.2} toneMapped={false} />
       </mesh>
 
       {/* Cells */}
@@ -92,7 +92,7 @@ export function WeekdayStrip({ onClick, active }) {
             <RoundedBox args={[CELL_W, CELL_H, 0.05]} radius={0.03} smoothness={3} ref={isToday ? highlightRef : null}>
               <meshStandardMaterial
                 color={isToday ? '#062b30' : '#04181c'}
-                emissive={isToday ? '#3fefef' : '#0a4a52'}
+                emissive={isToday ? '#3fcfd0' : '#0a4a52'}
                 emissiveIntensity={isToday ? 2.4 : 0.4}
                 toneMapped={false}
               />
@@ -102,7 +102,7 @@ export function WeekdayStrip({ onClick, active }) {
               font={ORBITRON_FONT}
               fontSize={0.26}
               letterSpacing={0.04}
-              color={isToday ? '#000510' : '#3fefef'}
+              color={isToday ? '#000510' : '#3fcfd0'}
               anchorX="center"
               anchorY="middle"
             >

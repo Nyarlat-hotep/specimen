@@ -87,7 +87,7 @@ export function Timeline({ onClick, active, scrubPos }) {
           <sphereGeometry args={[0.024, 12, 12]} />
           <meshStandardMaterial
             color="#000"
-            emissive={i === 2 ? '#3fefef' : z.color}
+            emissive={i === 2 ? '#3fcfd0' : z.color}
             emissiveIntensity={2.4}
             toneMapped={false}
           />
@@ -134,7 +134,7 @@ export function Timeline({ onClick, active, scrubPos }) {
           </mesh>
           <mesh position={[0, 0.26, 0]}>
             <octahedronGeometry args={[0.07, 0]} />
-            <meshStandardMaterial color="#150f04" emissive="#ff8a3a" emissiveIntensity={2.6} toneMapped={false} />
+            <meshStandardMaterial color="#150f04" emissive="#e8501a" emissiveIntensity={2.6} toneMapped={false} />
           </mesh>
         </group>
       ))}
@@ -142,11 +142,11 @@ export function Timeline({ onClick, active, scrubPos }) {
       {/* Scrub cursor — bar with halo ring */}
       <mesh ref={cursorRef} position={[0, 0.42, 0]}>
         <boxGeometry args={[0.06, 0.20, BAR_D + 0.2]} />
-        <meshStandardMaterial color="#020404" emissive="#3fefef" emissiveIntensity={3.0} toneMapped={false} />
+        <meshStandardMaterial color="#020404" emissive="#3fcfd0" emissiveIntensity={3.0} toneMapped={false} />
       </mesh>
       <mesh ref={cursorHaloRef} position={[0, 0.42, 0]} rotation={[Math.PI / 2, 0, 0]}>
         <torusGeometry args={[0.16, 0.012, 8, 24]} />
-        <meshStandardMaterial color="#000" emissive="#3fefef" emissiveIntensity={1.4} toneMapped={false} />
+        <meshStandardMaterial color="#000" emissive="#3fcfd0" emissiveIntensity={1.4} toneMapped={false} />
       </mesh>
 
       {/* Hit zone */}

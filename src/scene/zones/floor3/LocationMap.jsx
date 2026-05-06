@@ -137,7 +137,7 @@ export function LocationMap({ onClick, active, focusSite }) {
           {/* Marker tip */}
           <mesh ref={(el) => (markerRefs.current[i] = el)} position={[0, 0.42, 0]}>
             <coneGeometry args={[0.08, 0.16, 6]} />
-            <meshStandardMaterial color="#020404" emissive="#ff8a3a" emissiveIntensity={1.6} toneMapped={false} />
+            <meshStandardMaterial color="#020404" emissive="#e8501a" emissiveIntensity={1.6} toneMapped={false} />
           </mesh>
           {/* Code label */}
           <Text

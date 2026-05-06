@@ -5,11 +5,11 @@ import * as THREE from 'three'
 import { ZONES } from '../../utils/isoMath.js'
 
 const CRYSTALS = [
-  { x: -1.4, color: '#3aff5a', phase: 0.0, scale: 0.9 },
-  { x: -0.7, color: '#5aff5a', phase: 0.6, scale: 1.0 },
+  { x: -1.4, color: '#4ad068', phase: 0.0, scale: 0.9 },
+  { x: -0.7, color: '#4ad068', phase: 0.6, scale: 1.0 },
   { x: 0.0, color: '#ffd23a', phase: 1.2, scale: 1.1 },
-  { x: 0.7, color: '#ff5a3a', phase: 1.8, scale: 0.95 },
-  { x: 1.4, color: '#ff3a3a', phase: 2.4, scale: 0.85 },
+  { x: 0.7, color: '#e8501a', phase: 1.8, scale: 0.95 },
+  { x: 1.4, color: '#c8210a', phase: 2.4, scale: 0.85 },
 ]
 
 // Stepped pedestal lathe — three terraces narrowing as it rises.
@@ -125,7 +125,7 @@ export function CrystalCluster({ onClick, active, selectedIndex, onSelectCrystal
       >
         <meshStandardMaterial
           color="#06150a"
-          emissive="#3aff5a"
+          emissive="#4ad068"
           emissiveIntensity={0.4}
         />
       </RoundedBox>
@@ -133,20 +133,20 @@ export function CrystalCluster({ onClick, active, selectedIndex, onSelectCrystal
       {/* Plinth front trim */}
       <mesh position={[0, 0.155, 0.44]}>
         <boxGeometry args={[3.38, 0.012, 0.018]} />
-        <meshStandardMaterial color="#000" emissive="#3aff5a" emissiveIntensity={3} toneMapped={false} />
+        <meshStandardMaterial color="#000" emissive="#4ad068" emissiveIntensity={3} toneMapped={false} />
       </mesh>
 
       {/* Plinth back trim */}
       <mesh position={[0, 0.155, -0.44]}>
         <boxGeometry args={[3.38, 0.012, 0.018]} />
-        <meshStandardMaterial color="#000" emissive="#3aff5a" emissiveIntensity={2.4} toneMapped={false} />
+        <meshStandardMaterial color="#000" emissive="#4ad068" emissiveIntensity={2.4} toneMapped={false} />
       </mesh>
 
       {/* Index beads at plinth ends */}
       {[-1.65, 1.65].map((x, i) => (
         <mesh key={i} position={[x, 0.18, 0.36]}>
           <sphereGeometry args={[0.03, 12, 12]} />
-          <meshStandardMaterial color="#000" emissive="#3aff5a" emissiveIntensity={2.6} toneMapped={false} />
+          <meshStandardMaterial color="#000" emissive="#4ad068" emissiveIntensity={2.6} toneMapped={false} />
         </mesh>
       ))}
 

@@ -146,7 +146,7 @@ export function FluidDish({ onClick, active, nutrientDrops }) {
           <sphereGeometry args={[0.022, 12, 12]} />
           <meshStandardMaterial
             color="#000"
-            emissive={i === 1 ? '#ff8a3a' : z.color}
+            emissive={i === 1 ? '#e8501a' : z.color}
             emissiveIntensity={2.4}
             toneMapped={false}
           />
@@ -191,7 +191,7 @@ export function FluidDish({ onClick, active, nutrientDrops }) {
         {/* Pipette body — lathe */}
         <mesh position={[0.30, 0.20, 0]} rotation={[Math.PI, 0, 0]}>
           <latheGeometry args={[PIPETTE_PROFILE, 16]} />
-          <meshStandardMaterial color="#02100a" emissive="#3fefef" emissiveIntensity={1.6} toneMapped={false} />
+          <meshStandardMaterial color="#02100a" emissive="#3fcfd0" emissiveIntensity={1.6} toneMapped={false} />
         </mesh>
       </group>
 

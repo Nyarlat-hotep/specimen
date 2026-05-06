@@ -25,8 +25,8 @@ function makeRidgeFbm(noise2D) {
 
 const TERRAIN_FREQ = 0.6
 const TERRAIN_RIDGE_POW = 1.6
-const CALM_COLOR = new THREE.Color('#66ff8c')
-const ALERT_COLOR = new THREE.Color('#ff4030')
+const CALM_COLOR = new THREE.Color('#4ad068')
+const ALERT_COLOR = new THREE.Color('#c8210a')
 
 const SPECIMEN_FRAG = /* glsl */ `
   uniform float uTime;
@@ -103,7 +103,7 @@ function SensorPylon({ x, z, color, tiltSign }) {
         {/* Lens dot */}
         <mesh position={[-0.32, 0, 0]}>
           <sphereGeometry args={[0.05, 12, 12]} />
-          <meshStandardMaterial color="#000" emissive="#ff3030" emissiveIntensity={3} toneMapped={false} />
+          <meshStandardMaterial color="#000" emissive="#c8210a" emissiveIntensity={3} toneMapped={false} />
         </mesh>
       </group>
     </group>
@@ -254,7 +254,7 @@ export function AnomalyTerrain({ onClick, active, depth = 0 }) {
           <sphereGeometry args={[0.026, 12, 12]} />
           <meshStandardMaterial
             color="#000"
-            emissive={i === 3 ? '#ff3030' : c}
+            emissive={i === 3 ? '#c8210a' : c}
             emissiveIntensity={2.5}
             toneMapped={false}
           />
@@ -309,7 +309,7 @@ export function AnomalyTerrain({ onClick, active, depth = 0 }) {
           <sphereGeometry args={[0.06, 12, 12]} />
           <meshStandardMaterial
             color="#220404"
-            emissive="#ff3030"
+            emissive="#c8210a"
             emissiveIntensity={3.4}
             toneMapped={false}
           />
@@ -322,11 +322,11 @@ export function AnomalyTerrain({ onClick, active, depth = 0 }) {
         position={[0, 0.16, TERRAIN_SIZE / 2 + 0.5]}
         rotation={[-Math.PI / 2, 0, 0]}
         fontSize={0.32}
-        color="#ff3a3a"
+        color="#c8210a"
         anchorX="center"
         anchorY="middle"
         outlineWidth={0.005}
-        outlineColor="#ff3a3a"
+        outlineColor="#c8210a"
         material-toneMapped={false}
       >
         ERROR — UNKNOWN ENTITY
