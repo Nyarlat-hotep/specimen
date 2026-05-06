@@ -92,31 +92,50 @@ export const DISTRICTS = [
 // can keep importing ZONES_BY_FLOOR[N].FOO unchanged).
 export const ZONES_BY_FLOOR = { 1: ZONES_OBSERVATORY, 2: ZONES_DEEP, 3: ZONES_ARCHIVE }
 
-// Intra-district piping. Source zone's color paints the segment.
+// Intra-district piping. Edge format:
+//   [from, to]                                — single rail, source color
+//   [from, to, { rails, colors, extend }]     — N parallel rails (stacked y),
+//                                               each rail's color, and an
+//                                               overshoot past b's edge.
+// Colors aren't strictly tied to zone source — chosen for composition.
 export const PIPING_BY_FLOOR = {
   1: [
-    ['ANOMALY',   'EQUALIZER'],
-    ['WEEKDAY',   'CLOCK'],
+    ['ANOMALY',   'EQUALIZER', { rails: 2, colors: ['#e8501a', '#3fcfd0'] }],
+    ['WEEKDAY',   'CLOCK',     { extend: 1.2 }],
     ['EQUALIZER', 'CRYSTALS'],
-    ['CLOCK',     'CRYSTALS'],
-    ['ANOMALY',   'WEEKDAY'],
+    ['CLOCK',     'CRYSTALS',  { rails: 2, colors: ['#c8210a', '#ffd23a'], extend: 1.5 }],
+    ['ANOMALY',   'WEEKDAY',   { extend: 0.8 }],
   ],
   2: [
-    ['MICROSCOPE', 'FLUID'],
-    ['FLUID',      'CLASSIFIER'],
+    ['MICROSCOPE', 'FLUID',      { rails: 2, colors: ['#c8210a', '#ffd23a'] }],
+    ['FLUID',      'CLASSIFIER', { extend: 1.0 }],
     ['MICROSCOPE', 'SPECTRAL'],
-    ['CLASSIFIER', 'VITALS'],
+    ['CLASSIFIER', 'VITALS',     { rails: 2, colors: ['#ffd23a', '#4ad068'], extend: 1.2 }],
     ['SPECTRAL',   'VITALS'],
   ],
   3: [
-    ['TERMINAL',  'MAP'],
-    ['AUDIO',     'MAP'],
+    ['TERMINAL',  'MAP',      { rails: 2, colors: ['#c8210a', '#ffd23a'] }],
+    ['AUDIO',     'MAP',      { extend: 0.8 }],
     ['FEEDS',     'MAP'],
-    ['TIMELINE',  'MAP'],
-    ['TERMINAL',  'FEEDS'],
+    ['TIMELINE',  'MAP',      { rails: 2, colors: ['#ffa830', '#3fcfd0'], extend: 1.5 }],
+    ['TERMINAL',  'FEEDS',    { extend: 1.0 }],
     ['AUDIO',     'TIMELINE'],
   ],
 }
+
+// Compositional through-lines that don't connect specific zones — long
+// straight axis-aligned rails that pass across the world, framing the
+// districts like rails of a circuit board.
+// Format: { start: [x,y,z], end: [x,y,z], color }.
+export const FREE_PIPES = [
+  { start: [-32,  0.06, -22], end: [ 32,  0.06, -22], color: '#c8210a' },
+  { start: [-32,  0.38, -22], end: [ 32,  0.38, -22], color: '#ffa830' },
+  { start: [-25,  0.06,  22], end: [ 25,  0.06,  22], color: '#e8501a' },
+  { start: [-22,  0.06, -28], end: [-22,  0.06,  24], color: '#ffd23a' },
+  { start: [ 22,  0.06, -28], end: [ 22,  0.06,  24], color: '#e8501a' },
+  { start: [ 22,  0.38, -28], end: [ 22,  0.38,  24], color: '#3fcfd0' },
+  { start: [-30,  0.06,   0], end: [ 30,  0.06,   0], color: '#ffa830' },
+]
 
 // Sparse cross-district connectors — visually tie the triangle together.
 // Format: [fromDistrictId, fromZoneId, toDistrictId, toZoneId].
