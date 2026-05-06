@@ -123,19 +123,6 @@ export const PIPING_BY_FLOOR = {
   ],
 }
 
-// Compositional through-lines that don't connect specific zones — long
-// straight axis-aligned rails that pass across the world, framing the
-// districts like rails of a circuit board.
-// Format: { start: [x,y,z], end: [x,y,z], color }.
-export const FREE_PIPES = [
-  { start: [-32,  0.06, -22], end: [ 32,  0.06, -22], color: '#c8210a' },
-  { start: [-32,  0.38, -22], end: [ 32,  0.38, -22], color: '#ffa830' },
-  { start: [-25,  0.06,  22], end: [ 25,  0.06,  22], color: '#e8501a' },
-  { start: [-22,  0.06, -28], end: [-22,  0.06,  24], color: '#ffd23a' },
-  { start: [ 22,  0.06, -28], end: [ 22,  0.06,  24], color: '#e8501a' },
-  { start: [ 22,  0.38, -28], end: [ 22,  0.38,  24], color: '#3fcfd0' },
-  { start: [-30,  0.06,   0], end: [ 30,  0.06,   0], color: '#ffa830' },
-]
 
 // Sparse cross-district connectors — visually tie the triangle together.
 // Format: [fromDistrictId, fromZoneId, toDistrictId, toZoneId].

@@ -2,9 +2,12 @@ import { useMemo } from 'react'
 import * as THREE from 'three'
 
 // L-shaped neon pipe between two zone centers (axis-aligned for iso aesthetic).
-// `extend` overshoots past b's edge by N units (negative = stop short of edge).
+//   `extend`     — overshoot past b's edge by N units.
+//   `r` (signed) — perpendicular offset for parallel-rail variants.
+//                  Each segment is offset perpendicular to its own axis,
+//                  and the corner is shifted so segments still meet cleanly.
 function lShapeBetween(a, b, opts = {}) {
-  const { extend = 0, startOffset = 0 } = opts
+  const { extend = 0, r = 0 } = opts
   const ax = a.center[0]
   const az = a.center[2]
   const bx = b.center[0]
@@ -13,9 +16,12 @@ function lShapeBetween(a, b, opts = {}) {
   const fb = b.footprint / 2 + 0.4
   const dx = Math.sign(bx - ax) || 1
   const dz = Math.sign(bz - az) || 1
-  const start = [ax + dx * (fa + startOffset), 0.06, az]
-  const corner = [bx, 0.06, az]
-  const end = [bx, 0.06, bz - dz * fb + dz * extend]
+  // Shifted corner: x extends by r*dx, z shifts opposite by r*dz
+  const cornerX = bx + r * dx
+  const cornerZ = az - r * dz
+  const start  = [ax + dx * fa,    0.06, cornerZ]
+  const corner = [cornerX,         0.06, cornerZ]
+  const end    = [cornerX,         0.06, bz - dz * fb + dz * extend]
   return [
     { start, end: corner },
     { start: corner, end },
@@ -50,9 +56,9 @@ function PipeSegment({ start, end, color }) {
   )
 }
 
-// Stack rails vertically — in iso projection, a y-offset reads as a screen-space
-// diagonal shift, so two pipes at different y look like parallel rails on screen.
-const RAIL_Y_SPACING = 0.32
+// Perpendicular offset between adjacent rails (in pre-scale local units —
+// world spacing ends up at this * FLOOR_SCALE).
+const RAIL_SPACING = 0.32
 
 export function PipingNetwork({ zones, edges }) {
   const segments = useMemo(() => {
@@ -64,18 +70,16 @@ export function PipingNetwork({ zones, edges }) {
       const a = zones[aId]
       const b = zones[bId]
       if (!a || !b) continue
-      const baseSegs = lShapeBetween(a, b, opts)
       const rails = opts.rails || 1
       const colors = opts.colors || [a.color]
-      for (let r = 0; r < rails; r++) {
-        const yOffset = r * RAIL_Y_SPACING
-        const railColor = colors[r] || colors[colors.length - 1]
-        for (const seg of baseSegs) {
-          all.push({
-            start: [seg.start[0], seg.start[1] + yOffset, seg.start[2]],
-            end:   [seg.end[0],   seg.end[1]   + yOffset, seg.end[2]],
-            color: railColor,
-          })
+      // Symmetric offsets: 1 rail = [0]; 2 = [-s/2, +s/2]; 3 = [-s, 0, +s]; ...
+      const span = (rails - 1) * RAIL_SPACING
+      for (let i = 0; i < rails; i++) {
+        const r = -span / 2 + i * RAIL_SPACING
+        const railColor = colors[i] || colors[colors.length - 1]
+        const segs = lShapeBetween(a, b, { ...opts, r })
+        for (const seg of segs) {
+          all.push({ ...seg, color: railColor })
         }
       }
     }

@@ -3,7 +3,6 @@ import * as THREE from 'three'
 import {
   DISTRICTS,
   CROSS_DISTRICT_EDGES,
-  FREE_PIPES,
   FLOOR_SCALE,
   getZoneWorldCenter,
   findZone,
@@ -104,43 +103,6 @@ function CrossDistrictPiping() {
   )
 }
 
-// Long compositional rails defined in isoMath. Don't connect specific zones —
-// pass across the world like circuit-board traces for visual rhythm.
-function FreePipes() {
-  const segments = useMemo(() => {
-    const out = []
-    for (const { start, end, color } of FREE_PIPES) {
-      const s = new THREE.Vector3(...start)
-      const e = new THREE.Vector3(...end)
-      const dir = e.clone().sub(s)
-      const len = dir.length()
-      if (len < 0.001) continue
-      const mid = s.clone().add(e).multiplyScalar(0.5)
-      const q = new THREE.Quaternion().setFromUnitVectors(
-        new THREE.Vector3(0, 1, 0),
-        dir.clone().normalize()
-      )
-      out.push({ mid: mid.toArray(), length: len, quaternion: q, color })
-    }
-    return out
-  }, [])
-  return (
-    <group>
-      {segments.map((s, i) => (
-        <mesh key={i} position={s.mid} quaternion={s.quaternion}>
-          <cylinderGeometry args={[PIPE_RADIUS_WORLD, PIPE_RADIUS_WORLD, s.length, 8]} />
-          <meshStandardMaterial
-            color="#0a0204"
-            emissive={s.color}
-            emissiveIntensity={2.4}
-            toneMapped={false}
-          />
-        </mesh>
-      ))}
-    </group>
-  )
-}
-
 export function World({ activeZone, onZoneSelect, zoneState }) {
   return (
     <>
@@ -154,7 +116,6 @@ export function World({ activeZone, onZoneSelect, zoneState }) {
         />
       ))}
       <CrossDistrictPiping />
-      <FreePipes />
     </>
   )
 }
