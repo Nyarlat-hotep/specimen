@@ -37,7 +37,7 @@ function PipeSegment({ start, end, color }) {
   if (length < 0.001) return null
   return (
     <mesh position={mid} quaternion={quaternion}>
-      <cylinderGeometry args={[0.025, 0.025, length, 8]} />
+      <cylinderGeometry args={[0.06, 0.06, length, 8]} />
       <meshStandardMaterial
         color="#0a0204"
         emissive={color}

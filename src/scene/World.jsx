@@ -2,7 +2,10 @@ import { useMemo } from 'react'
 import * as THREE from 'three'
 import {
   DISTRICTS,
+  CROSS_DISTRICT_EDGES,
   FLOOR_SCALE,
+  getZoneWorldCenter,
+  findZone,
 } from '../utils/isoMath.js'
 import { Floor1Observatory } from './floors/Floor1Observatory.jsx'
 import { Floor2DeepSpecimen } from './floors/Floor2DeepSpecimen.jsx'
@@ -14,64 +17,8 @@ const FLOOR_COMPONENTS = {
   3: Floor3AnomalyArchive,
 }
 
-// Cylinder radius matched between intra (rendered inside FLOOR_SCALE=1.5
-// group) and deck frames (rendered at world root). 0.025 inside the scaled
-// group reads as ~0.038 in world; deck frame uses 0.038 directly.
-const PIPE_RADIUS_WORLD = 0.038
-const PIPE_Y = 0.06
-
-// Per-district deck frame dimensions (world units). Sized to enclose the
-// zones with breathing room; sit at floor level as architectural framing
-// rather than connecting to nodes.
-const DECK_FRAMES = {
-  1: { width: 24, depth: 22 },
-  2: { width: 24, depth: 18 },
-  3: { width: 22, depth: 22 },
-}
-
-function buildSegment({ start, end }) {
-  const s = new THREE.Vector3(...start)
-  const e = new THREE.Vector3(...end)
-  const dir = e.clone().sub(s)
-  const len = dir.length()
-  if (len < 0.001) return null
-  const mid = s.clone().add(e).multiplyScalar(0.5)
-  const q = new THREE.Quaternion().setFromUnitVectors(
-    new THREE.Vector3(0, 1, 0),
-    dir.clone().normalize()
-  )
-  return { mid: mid.toArray(), length: len, quaternion: q }
-}
-
-function DeckFrame({ width, depth, color, offset }) {
-  const segments = useMemo(() => {
-    const w = width / 2, d = depth / 2
-    const y = PIPE_Y
-    const sides = [
-      { start: [-w, y, -d], end: [+w, y, -d] },
-      { start: [+w, y, -d], end: [+w, y, +d] },
-      { start: [+w, y, +d], end: [-w, y, +d] },
-      { start: [-w, y, +d], end: [-w, y, -d] },
-    ]
-    return sides.map(buildSegment).filter(Boolean)
-  }, [width, depth])
-  return (
-    <group position={offset}>
-      {segments.map((s, i) => (
-        <mesh key={i} position={s.mid} quaternion={s.quaternion}>
-          <cylinderGeometry args={[PIPE_RADIUS_WORLD, PIPE_RADIUS_WORLD, s.length, 8]} />
-          <meshStandardMaterial
-            color="#0a0204"
-            emissive={color}
-            emissiveIntensity={2.0}
-            toneMapped={false}
-          />
-        </mesh>
-      ))}
-    </group>
-  )
-}
-
+// Per-district group: world-space offset, then FLOOR_SCALE inside so zone
+// internals stay in their pre-scale local coordinate system.
 function District({ district, activeZone, onZoneSelect, zoneState }) {
   const FloorComp = FLOOR_COMPONENTS[district.id]
   return (
@@ -96,6 +43,66 @@ function District({ district, activeZone, onZoneSelect, zoneState }) {
   )
 }
 
+// Cross-district connectors. L-shape axis-aligned (no diagonals) with radius
+// + emissive intensity matched to intra-district piping so all pipes read as
+// one consistent network. Intra-district pipes are rendered inside a
+// FLOOR_SCALE=1.5 group, so their 0.06 radius appears as 0.09 in world units;
+// cross-district pipes at world root use 0.09 directly.
+const PIPE_RADIUS_WORLD = 0.09
+const PIPE_Y = 0.09
+
+function CrossDistrictPiping() {
+  const segments = useMemo(() => {
+    const raw = []
+    for (const [fromD, fromZ, toD, toZ] of CROSS_DISTRICT_EDGES) {
+      const a = findZone(fromZ)
+      const b = findZone(toZ)
+      if (!a || !b || a.district.id !== fromD || b.district.id !== toD) continue
+      const aw = getZoneWorldCenter(fromZ)
+      const bw = getZoneWorldCenter(toZ)
+      const fa = (a.zone.footprint / 2 + 0.4) * FLOOR_SCALE
+      const fb = (b.zone.footprint / 2 + 0.4) * FLOOR_SCALE
+      const dx = Math.sign(bw[0] - aw[0]) || 1
+      const dz = Math.sign(bw[2] - aw[2]) || 1
+      const start  = [aw[0] + dx * fa, PIPE_Y, aw[2]]
+      const corner = [bw[0],            PIPE_Y, aw[2]]
+      const end    = [bw[0],            PIPE_Y, bw[2] - dz * fb]
+      raw.push({ start, end: corner, color: a.zone.color })
+      raw.push({ start: corner, end, color: a.zone.color })
+    }
+    const built = []
+    for (const { start, end, color } of raw) {
+      const s = new THREE.Vector3(...start)
+      const e = new THREE.Vector3(...end)
+      const dir = e.clone().sub(s)
+      const len = dir.length()
+      if (len < 0.001) continue
+      const mid = s.clone().add(e).multiplyScalar(0.5)
+      const q = new THREE.Quaternion().setFromUnitVectors(
+        new THREE.Vector3(0, 1, 0),
+        dir.clone().normalize()
+      )
+      built.push({ mid: mid.toArray(), length: len, quaternion: q, color })
+    }
+    return built
+  }, [])
+  return (
+    <group>
+      {segments.map((s, i) => (
+        <mesh key={i} position={s.mid} quaternion={s.quaternion}>
+          <cylinderGeometry args={[PIPE_RADIUS_WORLD, PIPE_RADIUS_WORLD, s.length, 8]} />
+          <meshStandardMaterial
+            color="#0a0204"
+            emissive={s.color}
+            emissiveIntensity={2.4}
+            toneMapped={false}
+          />
+        </mesh>
+      ))}
+    </group>
+  )
+}
+
 export function World({ activeZone, onZoneSelect, zoneState }) {
   return (
     <>
@@ -108,18 +115,7 @@ export function World({ activeZone, onZoneSelect, zoneState }) {
           zoneState={zoneState}
         />
       ))}
-      {DISTRICTS.map((d) => {
-        const f = DECK_FRAMES[d.id]
-        return (
-          <DeckFrame
-            key={d.id}
-            width={f.width}
-            depth={f.depth}
-            color={d.color}
-            offset={d.offset}
-          />
-        )
-      })}
+      <CrossDistrictPiping />
     </>
   )
 }
