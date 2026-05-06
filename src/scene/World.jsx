@@ -1,5 +1,5 @@
 import { useMemo } from 'react'
-import * as THREE from 'three'
+import { Line } from '@react-three/drei'
 import {
   DISTRICTS,
   CROSS_DISTRICT_EDGES,
@@ -43,17 +43,14 @@ function District({ district, activeZone, onZoneSelect, zoneState }) {
   )
 }
 
-// Cross-district connectors. L-shape axis-aligned (no diagonals) with radius
-// + emissive intensity matched to intra-district piping so all pipes read as
-// one consistent network. Intra-district pipes are rendered inside a
-// FLOOR_SCALE=1.5 group, so their 0.06 radius appears as 0.09 in world units;
-// cross-district pipes at world root use 0.09 directly.
-const PIPE_RADIUS_WORLD = 0.038
-const PIPE_Y = 0.09
+// Cross-district connectors. L-shape axis-aligned (no diagonals), rendered as
+// drei <Line> screen-space strokes — same look as intra-district piping.
+const CROSS_PIPE_Y = 0.09
+const CROSS_LINE_WIDTH = 2.2
 
 function CrossDistrictPiping() {
-  const segments = useMemo(() => {
-    const raw = []
+  const polylines = useMemo(() => {
+    const out = []
     for (const [fromD, fromZ, toD, toZ] of CROSS_DISTRICT_EDGES) {
       const a = findZone(fromZ)
       const b = findZone(toZ)
@@ -62,42 +59,45 @@ function CrossDistrictPiping() {
       const bw = getZoneWorldCenter(toZ)
       const fa = (a.zone.footprint / 2 + 0.4) * FLOOR_SCALE
       const fb = (b.zone.footprint / 2 + 0.4) * FLOOR_SCALE
-      const dx = Math.sign(bw[0] - aw[0]) || 1
-      const dz = Math.sign(bw[2] - aw[2]) || 1
-      const start  = [aw[0] + dx * fa, PIPE_Y, aw[2]]
-      const corner = [bw[0],            PIPE_Y, aw[2]]
-      const end    = [bw[0],            PIPE_Y, bw[2] - dz * fb]
-      raw.push({ start, end: corner, color: a.zone.color })
-      raw.push({ start: corner, end, color: a.zone.color })
+      const sameZ = Math.abs(bw[2] - aw[2]) < 0.001
+      const sameX = Math.abs(bw[0] - aw[0]) < 0.001
+
+      let points
+      if (sameZ) {
+        const dx = Math.sign(bw[0] - aw[0]) || 1
+        points = [
+          [aw[0] + dx * fa, CROSS_PIPE_Y, aw[2]],
+          [bw[0] - dx * fb, CROSS_PIPE_Y, aw[2]],
+        ]
+      } else if (sameX) {
+        const dz = Math.sign(bw[2] - aw[2]) || 1
+        points = [
+          [aw[0], CROSS_PIPE_Y, aw[2] + dz * fa],
+          [aw[0], CROSS_PIPE_Y, bw[2] - dz * fb],
+        ]
+      } else {
+        const dx = Math.sign(bw[0] - aw[0]) || 1
+        const dz = Math.sign(bw[2] - aw[2]) || 1
+        points = [
+          [aw[0] + dx * fa, CROSS_PIPE_Y, aw[2]],
+          [bw[0],            CROSS_PIPE_Y, aw[2]],
+          [bw[0],            CROSS_PIPE_Y, bw[2] - dz * fb],
+        ]
+      }
+      out.push({ points, color: a.zone.color })
     }
-    const built = []
-    for (const { start, end, color } of raw) {
-      const s = new THREE.Vector3(...start)
-      const e = new THREE.Vector3(...end)
-      const dir = e.clone().sub(s)
-      const len = dir.length()
-      if (len < 0.001) continue
-      const mid = s.clone().add(e).multiplyScalar(0.5)
-      const q = new THREE.Quaternion().setFromUnitVectors(
-        new THREE.Vector3(0, 1, 0),
-        dir.clone().normalize()
-      )
-      built.push({ mid: mid.toArray(), length: len, quaternion: q, color })
-    }
-    return built
+    return out
   }, [])
   return (
     <group>
-      {segments.map((s, i) => (
-        <mesh key={i} position={s.mid} quaternion={s.quaternion}>
-          <cylinderGeometry args={[PIPE_RADIUS_WORLD, PIPE_RADIUS_WORLD, s.length, 8]} />
-          <meshStandardMaterial
-            color="#0a0204"
-            emissive={s.color}
-            emissiveIntensity={2.4}
-            toneMapped={false}
-          />
-        </mesh>
+      {polylines.map((p, i) => (
+        <Line
+          key={i}
+          points={p.points}
+          color={p.color}
+          lineWidth={CROSS_LINE_WIDTH}
+          toneMapped={false}
+        />
       ))}
     </group>
   )

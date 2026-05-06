@@ -1,5 +1,5 @@
 import { useMemo } from 'react'
-import * as THREE from 'three'
+import { Line } from '@react-three/drei'
 
 // Axis-aligned pipe between two zone centers. Detects co-axial pairs (same x
 // or same z) and renders a single straight segment in those cases, otherwise
@@ -21,68 +21,39 @@ function pathBetween(a, b, opts = {}) {
 
   if (sameZ) {
     const dx = Math.sign(bx - ax) || 1
-    const start = [ax + dx * fa, 0.06, az + r]
-    const end   = [bx - dx * fb + dx * extend, 0.06, az + r]
-    return [{ start, end }]
+    return [[
+      [ax + dx * fa,             0.06, az + r],
+      [bx - dx * fb + dx * extend, 0.06, az + r],
+    ]]
   }
   if (sameX) {
     const dz = Math.sign(bz - az) || 1
-    const start = [ax + r, 0.06, az + dz * fa]
-    const end   = [ax + r, 0.06, bz - dz * fb + dz * extend]
-    return [{ start, end }]
+    return [[
+      [ax + r, 0.06, az + dz * fa],
+      [ax + r, 0.06, bz - dz * fb + dz * extend],
+    ]]
   }
 
-  // L-shape — rail's seg1 enters a along its x-edge at z = az + r*dz; seg2
-  // exits b along its z-edge at x = bx + r*dx. Corner shifts to keep them
-  // meeting cleanly.
   const dx = Math.sign(bx - ax) || 1
   const dz = Math.sign(bz - az) || 1
   const aEntryZ = az + r * dz
   const bExitX  = bx + r * dx
-  const start  = [ax + dx * fa, 0.06, aEntryZ]
-  const corner = [bExitX,        0.06, aEntryZ]
-  const end    = [bExitX,        0.06, bz - dz * fb + dz * extend]
-  return [
-    { start, end: corner },
-    { start: corner, end },
-  ]
+  // Single polyline with the corner: drei Line draws a continuous path through
+  // all points, so the L renders as one stroke without a visible joint.
+  return [[
+    [ax + dx * fa,        0.06, aEntryZ],
+    [bExitX,              0.06, aEntryZ],
+    [bExitX,              0.06, bz - dz * fb + dz * extend],
+  ]]
 }
 
-function PipeSegment({ start, end, color }) {
-  const { mid, length, quaternion } = useMemo(() => {
-    const s = new THREE.Vector3(...start)
-    const e = new THREE.Vector3(...end)
-    const dir = e.clone().sub(s)
-    const len = dir.length()
-    if (len < 0.001) return { mid: start, length: 0.001, quaternion: new THREE.Quaternion() }
-    const mid = s.clone().add(e).multiplyScalar(0.5)
-    const q = new THREE.Quaternion().setFromUnitVectors(
-      new THREE.Vector3(0, 1, 0),
-      dir.clone().normalize()
-    )
-    return { mid: mid.toArray(), length: len, quaternion: q }
-  }, [start, end])
-  if (length < 0.001) return null
-  return (
-    <mesh position={mid} quaternion={quaternion}>
-      <cylinderGeometry args={[0.025, 0.025, length, 8]} />
-      <meshStandardMaterial
-        color="#0a0204"
-        emissive={color}
-        emissiveIntensity={2.4}
-        toneMapped={false}
-      />
-    </mesh>
-  )
-}
-
-// Perpendicular offset between adjacent rails (in pre-scale local units —
-// world spacing ends up at this * FLOOR_SCALE).
 const RAIL_SPACING = 0.18
+const LINE_WIDTH = 2.2          // screen-space pixels
+const LINE_OPACITY = 1.0
 
 export function PipingNetwork({ zones, edges }) {
-  const segments = useMemo(() => {
-    const all = []
+  const polylines = useMemo(() => {
+    const out = []
     for (const edge of edges) {
       const aId = edge[0]
       const bId = edge[1]
@@ -92,23 +63,30 @@ export function PipingNetwork({ zones, edges }) {
       if (!a || !b) continue
       const rails = opts.rails || 1
       const colors = opts.colors || [a.color]
-      // Symmetric offsets: 1 rail = [0]; 2 = [-s/2, +s/2]; 3 = [-s, 0, +s]; ...
       const span = (rails - 1) * RAIL_SPACING
       for (let i = 0; i < rails; i++) {
         const r = -span / 2 + i * RAIL_SPACING
         const railColor = colors[i] || colors[colors.length - 1]
-        const segs = pathBetween(a, b, { ...opts, r })
-        for (const seg of segs) {
-          all.push({ ...seg, color: railColor })
+        const paths = pathBetween(a, b, { ...opts, r })
+        for (const points of paths) {
+          out.push({ points, color: railColor })
         }
       }
     }
-    return all
+    return out
   }, [zones, edges])
   return (
     <group>
-      {segments.map((s, i) => (
-        <PipeSegment key={i} {...s} />
+      {polylines.map((p, i) => (
+        <Line
+          key={i}
+          points={p.points}
+          color={p.color}
+          lineWidth={LINE_WIDTH}
+          transparent={LINE_OPACITY < 1}
+          opacity={LINE_OPACITY}
+          toneMapped={false}
+        />
       ))}
     </group>
   )
