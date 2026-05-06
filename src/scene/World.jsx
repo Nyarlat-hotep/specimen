@@ -48,7 +48,7 @@ function District({ district, activeZone, onZoneSelect, zoneState }) {
 // one consistent network. Intra-district pipes are rendered inside a
 // FLOOR_SCALE=1.5 group, so their 0.06 radius appears as 0.09 in world units;
 // cross-district pipes at world root use 0.09 directly.
-const PIPE_RADIUS_WORLD = 0.09
+const PIPE_RADIUS_WORLD = 0.038
 const PIPE_Y = 0.09
 
 function CrossDistrictPiping() {
