@@ -1,12 +1,14 @@
 import { useMemo } from 'react'
 import * as THREE from 'three'
 
-// L-shaped neon pipe between two zone centers (axis-aligned for iso aesthetic).
+// Axis-aligned pipe between two zone centers. Detects co-axial pairs (same x
+// or same z) and renders a single straight segment in those cases, otherwise
+// an L-shape.
 //   `extend`     — overshoot past b's edge by N units.
-//   `r` (signed) — perpendicular offset for parallel-rail variants.
-//                  Each segment is offset perpendicular to its own axis,
-//                  and the corner is shifted so segments still meet cleanly.
-function lShapeBetween(a, b, opts = {}) {
+//   `r` (signed) — perpendicular offset for parallel-rail variants. Rails
+//                  enter/exit each zone at slightly varied points along the
+//                  zone's edge perpendicular to the run direction.
+function pathBetween(a, b, opts = {}) {
   const { extend = 0, r = 0 } = opts
   const ax = a.center[0]
   const az = a.center[2]
@@ -14,14 +16,32 @@ function lShapeBetween(a, b, opts = {}) {
   const bz = b.center[2]
   const fa = a.footprint / 2 + 0.4
   const fb = b.footprint / 2 + 0.4
+  const sameZ = Math.abs(bz - az) < 0.001
+  const sameX = Math.abs(bx - ax) < 0.001
+
+  if (sameZ) {
+    const dx = Math.sign(bx - ax) || 1
+    const start = [ax + dx * fa, 0.06, az + r]
+    const end   = [bx - dx * fb + dx * extend, 0.06, az + r]
+    return [{ start, end }]
+  }
+  if (sameX) {
+    const dz = Math.sign(bz - az) || 1
+    const start = [ax + r, 0.06, az + dz * fa]
+    const end   = [ax + r, 0.06, bz - dz * fb + dz * extend]
+    return [{ start, end }]
+  }
+
+  // L-shape — rail's seg1 enters a along its x-edge at z = az + r*dz; seg2
+  // exits b along its z-edge at x = bx + r*dx. Corner shifts to keep them
+  // meeting cleanly.
   const dx = Math.sign(bx - ax) || 1
   const dz = Math.sign(bz - az) || 1
-  // Shifted corner: x extends by r*dx, z shifts opposite by r*dz
-  const cornerX = bx + r * dx
-  const cornerZ = az - r * dz
-  const start  = [ax + dx * fa,    0.06, cornerZ]
-  const corner = [cornerX,         0.06, cornerZ]
-  const end    = [cornerX,         0.06, bz - dz * fb + dz * extend]
+  const aEntryZ = az + r * dz
+  const bExitX  = bx + r * dx
+  const start  = [ax + dx * fa, 0.06, aEntryZ]
+  const corner = [bExitX,        0.06, aEntryZ]
+  const end    = [bExitX,        0.06, bz - dz * fb + dz * extend]
   return [
     { start, end: corner },
     { start: corner, end },
@@ -58,7 +78,7 @@ function PipeSegment({ start, end, color }) {
 
 // Perpendicular offset between adjacent rails (in pre-scale local units —
 // world spacing ends up at this * FLOOR_SCALE).
-const RAIL_SPACING = 0.32
+const RAIL_SPACING = 0.18
 
 export function PipingNetwork({ zones, edges }) {
   const segments = useMemo(() => {
@@ -77,7 +97,7 @@ export function PipingNetwork({ zones, edges }) {
       for (let i = 0; i < rails; i++) {
         const r = -span / 2 + i * RAIL_SPACING
         const railColor = colors[i] || colors[colors.length - 1]
-        const segs = lShapeBetween(a, b, { ...opts, r })
+        const segs = pathBetween(a, b, { ...opts, r })
         for (const seg of segs) {
           all.push({ ...seg, color: railColor })
         }
