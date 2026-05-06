@@ -49,8 +49,8 @@ export function Scene({
       />
 
       <EffectComposer>
-        <Bloom intensity={0.7} luminanceThreshold={0.55} luminanceSmoothing={0.4} kernelSize={3} mipmapBlur />
-        <Vignette eskil={false} offset={0.3} darkness={0.7} />
+        <Bloom intensity={1.4} luminanceThreshold={0.25} luminanceSmoothing={0.7} kernelSize={5} mipmapBlur />
+        <Vignette eskil={false} offset={0.25} darkness={0.85} />
       </EffectComposer>
     </Canvas>
   )
