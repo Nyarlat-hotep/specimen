@@ -1,58 +1,27 @@
-import { useMemo } from 'react'
-import * as THREE from 'three'
+// Rectangular emissive slab under each district. Reads as a colored platform
+// tile holding the district's zones — clearly demarcated, picks up bloom.
 
-// Soft radial ground-fog. Two stacked shader planes — a wider, brighter base
-// at the floor and a smaller secondary haze lifted a touch above it — read as
-// a low colored mist hugging the district rather than a flat painted disc.
-
-const VS = `
-  varying vec2 vUv;
-  void main() {
-    vUv = uv;
-    gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
-  }
-`
-
-const FS = `
-  uniform vec3 uColor;
-  uniform float uIntensity;
-  uniform float uPower;
-  varying vec2 vUv;
-  void main() {
-    float d = distance(vUv, vec2(0.5)) * 2.0;        // 0 center -> 1 edge
-    float a = clamp(1.0 - d, 0.0, 1.0);
-    a = pow(a, uPower) * uIntensity;
-    gl_FragColor = vec4(uColor, a);
-  }
-`
-
-function FogPlane({ color, radius, y, intensity, power }) {
-  const uniforms = useMemo(() => ({
-    uColor: { value: new THREE.Color(color) },
-    uIntensity: { value: intensity },
-    uPower: { value: power },
-  }), [color, intensity, power])
+export function DistrictPatch({ color, size = [22, 22] }) {
+  const [w, d] = size
+  const h = 0.4
   return (
-    <mesh position={[0, y, 0]} rotation={[-Math.PI / 2, 0, 0]}>
-      <planeGeometry args={[radius * 2, radius * 2, 1, 1]} />
-      <shaderMaterial
-        vertexShader={VS}
-        fragmentShader={FS}
-        uniforms={uniforms}
-        transparent
-        depthWrite={false}
-        blending={THREE.AdditiveBlending}
-      />
-    </mesh>
-  )
-}
-
-export function DistrictPatch({ color, radius = 14 }) {
-  return (
-    <group>
-      <FogPlane color={color} radius={radius * 1.15} y={-1.45} intensity={0.55} power={1.6} />
-      <FogPlane color={color} radius={radius * 0.78} y={-1.30} intensity={0.40} power={2.4} />
-      <FogPlane color={color} radius={radius * 0.45} y={-1.10} intensity={0.30} power={3.2} />
+    <group position={[0, -1.5 + h / 2, 0]}>
+      {/* Base — dark with faint district-color emissive bleed on the sides */}
+      <mesh>
+        <boxGeometry args={[w, h, d]} />
+        <meshStandardMaterial
+          color="#04060a"
+          emissive={color}
+          emissiveIntensity={0.22}
+          roughness={0.7}
+          metalness={0.25}
+        />
+      </mesh>
+      {/* Top face — brighter saturated color so the slab "lights up" the cluster */}
+      <mesh position={[0, h / 2 + 0.005, 0]} rotation={[-Math.PI / 2, 0, 0]}>
+        <planeGeometry args={[w * 0.97, d * 0.97]} />
+        <meshBasicMaterial color={color} transparent opacity={0.35} toneMapped={false} />
+      </mesh>
     </group>
   )
 }

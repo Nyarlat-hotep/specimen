@@ -2,7 +2,7 @@ import { useEffect, useRef } from 'react'
 import { useThree } from '@react-three/fiber'
 
 const DRAG_THRESHOLD = 5
-const ZOOM_MIN = 50
+const ZOOM_MIN = 18
 const ZOOM_MAX = 180
 const ZOOM_STEP_WHEEL = 1.08
 const ZOOM_STEP_PINCH = 0.02

@@ -23,7 +23,7 @@ function District({ district, activeZone, onZoneSelect, zoneState }) {
   const FloorComp = FLOOR_COMPONENTS[district.id]
   return (
     <group position={district.offset}>
-      <DistrictPatch color={district.color} radius={district.patchRadius} />
+      <DistrictPatch color={district.color} size={district.slabSize} />
       <FloorComp
         activeZone={activeZone}
         onZoneSelect={onZoneSelect}
