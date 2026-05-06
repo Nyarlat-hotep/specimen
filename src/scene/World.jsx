@@ -6,7 +6,6 @@ import {
   getZoneWorldCenter,
   findZone,
 } from '../utils/isoMath.js'
-import { DistrictPatch } from './DistrictPatch.jsx'
 import { Floor1Observatory } from './floors/Floor1Observatory.jsx'
 import { Floor2DeepSpecimen } from './floors/Floor2DeepSpecimen.jsx'
 import { Floor3AnomalyArchive } from './floors/Floor3AnomalyArchive.jsx'
@@ -23,7 +22,6 @@ function District({ district, activeZone, onZoneSelect, zoneState }) {
   const FloorComp = FLOOR_COMPONENTS[district.id]
   return (
     <group position={district.offset}>
-      <DistrictPatch color={district.color} size={district.slabSize} />
       <FloorComp
         activeZone={activeZone}
         onZoneSelect={onZoneSelect}
