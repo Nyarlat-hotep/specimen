@@ -14,23 +14,27 @@ function pathBetween(a, b, opts = {}) {
   const az = a.center[2]
   const bx = b.center[0]
   const bz = b.center[2]
-  const fa = a.footprint / 2 + 0.4
-  const fb = b.footprint / 2 + 0.4
   const sameZ = Math.abs(bz - az) < 0.001
   const sameX = Math.abs(bx - ax) < 0.001
+  // Pipes terminate at zone CENTERS, not at a footprint-derived edge. Each
+  // zone's plinth occludes the buried portion of the pipe via depth-test,
+  // so the visible end always reaches the plinth's silhouette regardless of
+  // the actual plinth size. This decouples piping geometry from per-zone
+  // visual dimensions, which previously varied widely (2.0×1.4 plinths vs
+  // footprint=4 → 1.4-unit gap).
 
   if (sameZ) {
     const dx = Math.sign(bx - ax) || 1
     return [[
-      [ax + dx * fa,             0.06, az + r],
-      [bx - dx * fb + dx * extend, 0.06, az + r],
+      [ax, 0.06, az + r],
+      [bx + dx * extend, 0.06, az + r],
     ]]
   }
   if (sameX) {
     const dz = Math.sign(bz - az) || 1
     return [[
-      [ax + r, 0.06, az + dz * fa],
-      [ax + r, 0.06, bz - dz * fb + dz * extend],
+      [ax + r, 0.06, az],
+      [ax + r, 0.06, bz + dz * extend],
     ]]
   }
 
@@ -38,12 +42,10 @@ function pathBetween(a, b, opts = {}) {
   const dz = Math.sign(bz - az) || 1
   const aEntryZ = az + r * dz
   const bExitX  = bx + r * dx
-  // Single polyline with the corner: drei Line draws a continuous path through
-  // all points, so the L renders as one stroke without a visible joint.
   return [[
-    [ax + dx * fa,        0.06, aEntryZ],
-    [bExitX,              0.06, aEntryZ],
-    [bExitX,              0.06, bz - dz * fb + dz * extend],
+    [ax,     0.06, aEntryZ],
+    [bExitX, 0.06, aEntryZ],
+    [bExitX, 0.06, bz + dz * extend],
   ]]
 }
 

@@ -57,31 +57,26 @@ function CrossDistrictPiping() {
       if (!a || !b || a.district.id !== fromD || b.district.id !== toD) continue
       const aw = getZoneWorldCenter(fromZ)
       const bw = getZoneWorldCenter(toZ)
-      const fa = (a.zone.footprint / 2 + 0.4) * FLOOR_SCALE
-      const fb = (b.zone.footprint / 2 + 0.4) * FLOOR_SCALE
       const sameZ = Math.abs(bw[2] - aw[2]) < 0.001
       const sameX = Math.abs(bw[0] - aw[0]) < 0.001
 
+      // Terminate at zone CENTERS — plinth depth-test occludes the buried part.
       let points
       if (sameZ) {
-        const dx = Math.sign(bw[0] - aw[0]) || 1
         points = [
-          [aw[0] + dx * fa, CROSS_PIPE_Y, aw[2]],
-          [bw[0] - dx * fb, CROSS_PIPE_Y, aw[2]],
+          [aw[0], CROSS_PIPE_Y, aw[2]],
+          [bw[0], CROSS_PIPE_Y, aw[2]],
         ]
       } else if (sameX) {
-        const dz = Math.sign(bw[2] - aw[2]) || 1
         points = [
-          [aw[0], CROSS_PIPE_Y, aw[2] + dz * fa],
-          [aw[0], CROSS_PIPE_Y, bw[2] - dz * fb],
+          [aw[0], CROSS_PIPE_Y, aw[2]],
+          [aw[0], CROSS_PIPE_Y, bw[2]],
         ]
       } else {
-        const dx = Math.sign(bw[0] - aw[0]) || 1
-        const dz = Math.sign(bw[2] - aw[2]) || 1
         points = [
-          [aw[0] + dx * fa, CROSS_PIPE_Y, aw[2]],
-          [bw[0],            CROSS_PIPE_Y, aw[2]],
-          [bw[0],            CROSS_PIPE_Y, bw[2] - dz * fb],
+          [aw[0], CROSS_PIPE_Y, aw[2]],
+          [bw[0], CROSS_PIPE_Y, aw[2]],
+          [bw[0], CROSS_PIPE_Y, bw[2]],
         ]
       }
       out.push({ points, color: a.zone.color })
