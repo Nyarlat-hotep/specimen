@@ -34,7 +34,6 @@ export function Terminal({ onClick, active }) {
     if (cursorRef.current) {
       cursorRef.current.material.emissiveIntensity = (Math.sin(t * 4) > 0) ? 3.0 : 0.1
     }
-    if (groupRef.current && !active) groupRef.current.rotation.y = Math.sin(t * 0.21) * 0.04
   })
 
   const onPointer = (e) => {

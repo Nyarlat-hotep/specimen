@@ -31,7 +31,6 @@ export function WeekdayStrip({ onClick, active }) {
       highlightRef.current.material.emissiveIntensity = 2.4 + Math.sin(t * 2) * 0.8
     }
     if (groupRef.current && !active) {
-      groupRef.current.rotation.y = Math.sin(t * 0.22 + 1.3) * 0.04
     }
   })
 

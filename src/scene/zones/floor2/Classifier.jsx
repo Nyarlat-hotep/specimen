@@ -85,7 +85,6 @@ export function Classifier({ onClick, active, sampleIndex }) {
   useFrame((state) => {
     const t = state.clock.elapsedTime
     if (helixRef.current) helixRef.current.rotation.y = t * 0.6
-    if (groupRef.current && !active) groupRef.current.rotation.y = Math.sin(t * 0.18 + 1.0) * 0.05
   })
 
   const onPointer = (e) => {

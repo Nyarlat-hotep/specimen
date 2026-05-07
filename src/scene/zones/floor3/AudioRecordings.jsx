@@ -36,7 +36,6 @@ export function AudioRecordings({ onClick, active, playingIndex }) {
       const speed = isPlaying ? 4.0 : 0.0
       reel.rotation.z += speed * 0.016
     })
-    if (groupRef.current && !active) groupRef.current.rotation.y = Math.sin(t * 0.21 + 0.9) * 0.04
   })
 
   const onPointer = (e) => {

@@ -46,7 +46,6 @@ export function LocationMap({ onClick, active, focusSite }) {
         : 1.6 + Math.sin(t * 1.6 + i) * 0.4
     })
     if (ringRef.current) ringRef.current.rotation.z = t * 0.2
-    if (groupRef.current && !active) groupRef.current.rotation.y = Math.sin(t * 0.18 + 2.7) * 0.04
   })
 
   const onPointer = (e) => {

@@ -47,7 +47,6 @@ export function Equalizer({ onClick, active, channel = 0 }) {
       needleRef.current.rotation.z = -1.2 + v * 2.4
     }
     if (groupRef.current && !active) {
-      groupRef.current.rotation.y = Math.sin(t * 0.2) * 0.04
     }
   })
 

@@ -42,7 +42,6 @@ export function Timeline({ onClick, active, scrubPos }) {
         cursorHaloRef.current.material.emissiveIntensity = 1.4 + Math.sin(t * 4) * 0.5
       }
     }
-    if (groupRef.current && !active) groupRef.current.rotation.y = Math.sin(t * 0.2 + 1.4) * 0.04
   })
 
   const onPointer = (e) => {

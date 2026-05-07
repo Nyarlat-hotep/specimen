@@ -70,7 +70,6 @@ export function Microscope({ onClick, active }) {
       lensRef.current.material.emissiveIntensity = 1.6 + Math.sin(t * 1.4) * 0.4
     }
     if (groupRef.current && !active) {
-      groupRef.current.rotation.y = Math.sin(t * 0.21) * 0.04
     }
   })
 

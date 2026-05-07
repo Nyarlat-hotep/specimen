@@ -112,7 +112,6 @@ export function FluidDish({ onClick, active, nutrientDrops }) {
     uniforms.uCreaturePos.value.set(Math.sin(t * 0.4) * 0.18, Math.cos(t * 0.3) * 0.16)
     const target = Math.min(1, (nutrientDrops || 0) * 0.18)
     uniforms.uNutrient.value += (target - uniforms.uNutrient.value) * 0.04
-    if (groupRef.current && !active) groupRef.current.rotation.y = Math.sin(t * 0.22 + 0.4) * 0.05
   })
 
   const onPointer = (e) => {

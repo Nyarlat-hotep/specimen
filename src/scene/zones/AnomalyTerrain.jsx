@@ -204,7 +204,6 @@ export function AnomalyTerrain({ onClick, active, depth = 0 }) {
     specimenUniforms.uReveal.value += (reveal - specimenUniforms.uReveal.value) * 0.08
 
     if (groupRef.current) {
-      if (!active) groupRef.current.rotation.y = Math.sin(t * 0.18 + 2.1) * 0.04
     }
     if (containmentRingRef.current) {
       containmentRingRef.current.rotation.z = -t * 0.1

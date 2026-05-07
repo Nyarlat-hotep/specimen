@@ -93,7 +93,6 @@ export function VitalSigns({ onClick, active }) {
       pulseRingRef.current.material.emissiveIntensity = 1.0 + Math.sin(t * 4.0) * 0.6
     }
 
-    if (groupRef.current && !active) groupRef.current.rotation.y = Math.sin(t * 0.18 + 1.6) * 0.04
   })
 
   const onPointer = (e) => {

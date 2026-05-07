@@ -102,7 +102,6 @@ export function CrystalCluster({ onClick, active, selectedIndex, onSelectCrystal
   useFrame((state) => {
     const t = state.clock.elapsedTime
     if (groupRef.current && !active) {
-      groupRef.current.rotation.y = Math.sin(t * 0.24 + 0.7) * 0.05
     }
   })
 

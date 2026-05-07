@@ -88,7 +88,6 @@ export function SevenSegClock({ onClick, active }) {
       colonRef.current.material.emissiveIntensity = blink
     }
     if (groupRef.current && !active) {
-      groupRef.current.rotation.y = Math.sin(t * 0.18) * 0.05
     }
   })
 

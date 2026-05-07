@@ -108,7 +108,6 @@ export function Surveillance({ onClick, active }) {
 
   useFrame((state) => {
     const t = state.clock.elapsedTime
-    if (groupRef.current && !active) groupRef.current.rotation.y = Math.sin(t * 0.18 + 0.6) * 0.04
   })
 
   const onPointer = (e) => {

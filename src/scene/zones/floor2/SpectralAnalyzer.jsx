@@ -66,7 +66,6 @@ export function SpectralAnalyzer({ onClick, active, band = 1 }) {
       const sweep = ((t * 0.4) % 1) * 2 - 1
       sweepRef.current.position.x = sweep * (PANEL_W * 0.43)
     }
-    if (groupRef.current && !active) groupRef.current.rotation.y = Math.sin(t * 0.2 + 2.4) * 0.04
   })
 
   const onPointer = (e) => {
