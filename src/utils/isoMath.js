@@ -46,7 +46,7 @@ export const DISTRICTS = [
     short: '01',
     color: '#ffa830',
     sub: 'WIDE-FIELD SCAN',
-    offset: [0, 0, -16],
+    offset: [0, 0, -15],
     zones: ZONES_OBSERVATORY,
     lights: [
       { position: [-6, 6, -2], intensity: 0.8, color: '#e8501a', distance: 14 },
@@ -60,7 +60,7 @@ export const DISTRICTS = [
     short: '02',
     color: '#c8210a',
     sub: 'BIO INSTRUMENTATION',
-    offset: [-15, 0, 10],
+    offset: [-15, 0, 10.5],
     zones: ZONES_DEEP,
     lights: [
       { position: [-6, 6, -3], intensity: 0.7, color: '#c8210a', distance: 14 },
@@ -76,7 +76,7 @@ export const DISTRICTS = [
     short: '03',
     color: '#e8501a',
     sub: 'RECORDS · TELEMETRY',
-    offset: [15, 0, 10],
+    offset: [15, 0, 10.5],
     zones: ZONES_ARCHIVE,
     lights: [
       { position: [-6, 6,  0], intensity: 0.7, color: '#c8210a', distance: 14 },

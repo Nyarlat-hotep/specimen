@@ -10,7 +10,7 @@ export function GridFloor() {
       cellSize={0.5}
       cellThickness={0.4}
       cellColor="#3a1408"
-      sectionSize={2}
+      sectionSize={1.5}
       sectionThickness={0.9}
       sectionColor="#a04018"
       fadeDistance={140}
