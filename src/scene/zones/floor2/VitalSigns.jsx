@@ -1,8 +1,9 @@
 import { useMemo, useRef } from 'react'
 import { useFrame } from '@react-three/fiber'
-import { RoundedBox } from '@react-three/drei'
+import { Edges } from '@react-three/drei'
 import * as THREE from 'three'
 import { ZONES_BY_FLOOR } from '../../../utils/isoMath.js'
+import { Wire } from '../../wire.jsx'
 
 const PANEL_W = 3.0
 const PANEL_H = 1.4
@@ -86,11 +87,13 @@ export function VitalSigns({ onClick, active }) {
       const target = stress * 1.1
       gaugeRef.current.scale.x += (target - gaugeRef.current.scale.x) * 0.1
       gaugeRef.current.scale.y = gaugeRef.current.scale.x
-      gaugeRef.current.material.emissiveIntensity = 1.5 + stress * 1.5
+      const k = 0.6 + stress * 0.6
+      gaugeRef.current.material.color.setRGB(0.78 * k, 0.13 * k, 0.04 * k)
     }
     if (pulseRingRef.current) {
       pulseRingRef.current.rotation.z = t * 0.5
-      pulseRingRef.current.material.emissiveIntensity = 1.0 + Math.sin(t * 4.0) * 0.6
+      const k = 0.7 + Math.sin(t * 4.0) * 0.3
+      pulseRingRef.current.material.color.setRGB(0.247 * k, 0.812 * k, 0.816 * k)
     }
 
   })
@@ -113,24 +116,26 @@ export function VitalSigns({ onClick, active }) {
       {[-1.20, 1.20].map((x, i) => (
         <mesh key={i} position={[x, 0, 0]}>
           <latheGeometry args={[FOOT_PROFILE, 16]} />
-          <meshStandardMaterial color="#1a0606" emissive={z.color} emissiveIntensity={0.5} />
+          <Wire color={z.color} />
         </mesh>
       ))}
 
-      {/* Chamfered casing */}
-      <RoundedBox args={[PANEL_W, PANEL_H, PANEL_D]} radius={0.07} smoothness={3} position={[0, PANEL_CY, 0]}>
-        <meshStandardMaterial color="#1a0606" emissive={z.color} emissiveIntensity={0.45} />
-      </RoundedBox>
+      {/* Casing */}
+      <mesh position={[0, PANEL_CY, 0]}>
+        <boxGeometry args={[PANEL_W, PANEL_H, PANEL_D]} />
+        <Wire color={z.color} />
+      </mesh>
 
       {/* Inset bezel */}
-      <RoundedBox args={[PANEL_W * 0.85, PANEL_H * 0.78, 0.04]} radius={0.04} smoothness={3} position={[-0.08, PANEL_CY, PANEL_D / 2 - 0.01]}>
-        <meshStandardMaterial color="#0a0202" emissive={z.color} emissiveIntensity={0.45} />
-      </RoundedBox>
+      <mesh position={[-0.08, PANEL_CY, PANEL_D / 2 - 0.01]}>
+        <boxGeometry args={[PANEL_W * 0.85, PANEL_H * 0.78, 0.04]} />
+        <Wire color={z.color} />
+      </mesh>
 
       {/* Dark CRT screen */}
       <mesh position={[-0.08, PANEL_CY, PANEL_D / 2 + 0.001]}>
         <planeGeometry args={[PANEL_W * 0.78, PANEL_H * 0.72]} />
-        <meshStandardMaterial color="#000" emissive="#1a0a08" emissiveIntensity={0.4} toneMapped={false} />
+        <meshBasicMaterial color="#000" />
       </mesh>
 
       {/* ECG line */}
@@ -147,30 +152,31 @@ export function VitalSigns({ onClick, active }) {
         {/* Gauge background ring */}
         <mesh position={[0, 0.15, 0]}>
           <ringGeometry args={[0.16, 0.22, 32]} />
-          <meshStandardMaterial color="#000" emissive={z.color} emissiveIntensity={1.0} side={THREE.DoubleSide} toneMapped={false} />
+          <meshBasicMaterial color={z.color} side={THREE.DoubleSide} toneMapped={false} />
         </mesh>
-        {/* Pulsing inner gauge */}
+        {/* Pulsing inner gauge — wireframe sphere */}
         <mesh ref={gaugeRef} position={[0, 0.15, 0.01]}>
-          <sphereGeometry args={[0.12, 16, 16]} />
-          <meshStandardMaterial color="#3a0606" emissive="#c8210a" emissiveIntensity={2.2} toneMapped={false} />
+          <sphereGeometry args={[0.12, 14, 10]} />
+          <meshBasicMaterial color="#c8210a" wireframe toneMapped={false} />
         </mesh>
         {/* Sweeping pulse ring */}
         <mesh ref={pulseRingRef} position={[0, -0.20, 0.005]}>
           <ringGeometry args={[0.10, 0.12, 32, 1, 0, Math.PI * 1.5]} />
-          <meshStandardMaterial color="#000" emissive="#3fcfd0" emissiveIntensity={1.2} side={THREE.DoubleSide} toneMapped={false} />
+          <meshBasicMaterial color="#3fcfd0" side={THREE.DoubleSide} toneMapped={false} />
         </mesh>
       </group>
 
       {/* Top vent grille */}
-      <RoundedBox args={[PANEL_W * 0.94, 0.08, PANEL_D * 0.55]} radius={0.02} smoothness={3} position={[0, PANEL_CY + PANEL_H / 2 + 0.045, 0]}>
-        <meshStandardMaterial color="#0a0202" emissive={z.color} emissiveIntensity={0.7} />
-      </RoundedBox>
+      <mesh position={[0, PANEL_CY + PANEL_H / 2 + 0.045, 0]}>
+        <boxGeometry args={[PANEL_W * 0.94, 0.08, PANEL_D * 0.55]} />
+        <Wire color={z.color} />
+      </mesh>
       {Array.from({ length: 12 }).map((_, i) => {
         const x = (i / 11 - 0.5) * (PANEL_W * 0.84)
         return (
           <mesh key={i} position={[x, PANEL_CY + PANEL_H / 2 + 0.045, PANEL_D * 0.30]}>
             <boxGeometry args={[0.05, 0.04, 0.003]} />
-            <meshStandardMaterial color="#000" emissive={z.color} emissiveIntensity={1.5} toneMapped={false} />
+            <meshBasicMaterial color={z.color} toneMapped={false} />
           </mesh>
         )
       })}
@@ -178,7 +184,7 @@ export function VitalSigns({ onClick, active }) {
       {/* Top glow strip */}
       <mesh position={[0, PANEL_CY + PANEL_H / 2 + 0.09, PANEL_D * 0.28]}>
         <boxGeometry args={[PANEL_W * 0.92, 0.012, 0.018]} />
-        <meshStandardMaterial color="#000" emissive={z.color} emissiveIntensity={3} toneMapped={false} />
+        <meshBasicMaterial color={z.color} toneMapped={false} />
       </mesh>
 
       {/* Side knob column — left wing */}
@@ -186,7 +192,7 @@ export function VitalSigns({ onClick, active }) {
         {[0.35, 0.18, 0.0, -0.18, -0.35].map((y, i) => (
           <mesh key={i} position={[0, y, 0]}>
             <latheGeometry args={[KNOB_PROFILE, 16]} />
-            <meshStandardMaterial color="#0a0202" emissive={z.color} emissiveIntensity={1.4} toneMapped={false} />
+            <Wire color={z.color} />
           </mesh>
         ))}
       </group>
@@ -194,20 +200,15 @@ export function VitalSigns({ onClick, active }) {
       {/* Bottom-front status row */}
       {[-0.9, -0.6, -0.3, 0.0, 0.3, 0.6].map((x, i) => (
         <mesh key={i} position={[x, PANEL_CY - PANEL_H / 2 - 0.06, PANEL_D / 2 + 0.005]}>
-          <sphereGeometry args={[0.024, 12, 12]} />
-          <meshStandardMaterial
-            color="#000"
-            emissive={i === 0 ? '#c8210a' : i === 5 ? '#3fcfd0' : z.color}
-            emissiveIntensity={2.4}
-            toneMapped={false}
-          />
+          <sphereGeometry args={[0.024, 8, 6]} />
+          <meshBasicMaterial color={i === 0 ? '#c8210a' : i === 5 ? '#3fcfd0' : z.color} toneMapped={false} />
         </mesh>
       ))}
 
       {/* Hit zone */}
       <mesh position={[0, PANEL_CY, 0]}>
         <boxGeometry args={[PANEL_W + 0.4, PANEL_H + 0.6, PANEL_D + 0.6]} />
-        <meshBasicMaterial transparent opacity={0} depthWrite={false} />
+        <meshBasicMaterial colorWrite={false} depthWrite={false} />
       </mesh>
     </group>
   )

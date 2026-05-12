@@ -50,27 +50,33 @@
   50% { opacity: 0.95; }
 }
 
-/* Zone panel — desktop slides from right, mobile slides from bottom */
+/* ─── Zone panel — tron-style; per-node color via --zone-color ─────── */
 .zone-panel {
+  --tron: var(--zone-color, #ffa830);
+  --tron-dim: color-mix(in srgb, var(--tron) 22%, transparent);
+  --tron-edge: color-mix(in srgb, var(--tron) 65%, transparent);
   position: fixed;
-  background: rgba(8, 4, 2, 0.92);
-  border: 1px solid var(--zone-color, #ffa830);
+  background: linear-gradient(180deg, rgba(2, 6, 10, 0.96), rgba(0, 2, 4, 0.96));
+  border: 1px solid var(--tron);
+  border-radius: 0;
+  color: #d8e8f2;
+  font-family: 'Share Tech Mono', 'Courier New', ui-monospace, monospace;
   box-shadow:
-    0 0 32px rgba(0, 0, 0, 0.85),
-    inset 0 0 24px color-mix(in srgb, var(--zone-color, #ffa830) 18%, transparent);
-  color: #f0d8a8;
-  font-family: 'Courier New', ui-monospace, monospace;
+    0 0 0 1px color-mix(in srgb, var(--tron) 35%, transparent),
+    0 0 24px color-mix(in srgb, var(--tron) 36%, transparent),
+    0 0 64px color-mix(in srgb, var(--tron) 16%, transparent),
+    inset 0 0 32px color-mix(in srgb, var(--tron) 10%, transparent);
   z-index: 20;
   pointer-events: auto;
-  overflow: hidden;
+  overflow: visible;
 }
 .zone-panel.desktop {
   top: 50%;
   right: 24px;
   transform: translateY(-50%);
-  width: 360px;
+  width: 380px;
   max-height: 80vh;
-  border-radius: 14px;
+  border-radius: 0;
 }
 .zone-panel.mobile {
   left: 0;
@@ -78,142 +84,263 @@
   bottom: 0;
   max-height: 60vh;
   padding-bottom: env(safe-area-inset-bottom, 0px);
-  border-radius: 16px 16px 0 0;
+  border-radius: 0;
 }
+
+/* Scan-line + faint grid texture for depth */
+.zone-panel::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    repeating-linear-gradient(
+      to bottom,
+      transparent 0,
+      transparent 3px,
+      color-mix(in srgb, var(--tron) 5%, transparent) 3px,
+      color-mix(in srgb, var(--tron) 5%, transparent) 4px
+    ),
+    linear-gradient(180deg, color-mix(in srgb, var(--tron) 6%, transparent), transparent 40%);
+  mix-blend-mode: screen;
+  z-index: 0;
+}
+
+/* Decorative tron corner brackets — overlay on the border */
+.zone-panel::after {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  pointer-events: none;
+  z-index: 2;
+  background:
+    linear-gradient(var(--tron), var(--tron)) left   top    / 14px 2px no-repeat,
+    linear-gradient(var(--tron), var(--tron)) left   top    / 2px 14px no-repeat,
+    linear-gradient(var(--tron), var(--tron)) right  top    / 14px 2px no-repeat,
+    linear-gradient(var(--tron), var(--tron)) right  top    / 2px 14px no-repeat,
+    linear-gradient(var(--tron), var(--tron)) left   bottom / 14px 2px no-repeat,
+    linear-gradient(var(--tron), var(--tron)) left   bottom / 2px 14px no-repeat,
+    linear-gradient(var(--tron), var(--tron)) right  bottom / 14px 2px no-repeat,
+    linear-gradient(var(--tron), var(--tron)) right  bottom / 2px 14px no-repeat;
+  filter: drop-shadow(0 0 4px var(--tron));
+}
+
+.zone-panel > * { position: relative; z-index: 1; }
 
 .zone-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 14px 18px;
-  border-bottom: 1px solid color-mix(in srgb, var(--zone-color, #ffa830) 35%, transparent);
+  padding: 16px 22px 14px;
+  border-bottom: 1px solid var(--tron-edge);
+  background: linear-gradient(180deg, color-mix(in srgb, var(--tron) 14%, transparent), transparent);
 }
 .zone-title {
+  font-family: 'Orbitron', sans-serif;
+  font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.2em;
-  font-size: 12px;
-  color: var(--zone-color, #ffa830);
-  text-shadow: 0 0 8px var(--zone-color, #ffa830);
+  letter-spacing: 0.32em;
+  font-size: 13px;
+  color: var(--tron);
+  text-shadow: 0 0 10px var(--tron), 0 0 22px color-mix(in srgb, var(--tron) 40%, transparent);
+}
+.zone-title::before {
+  content: '◤ ';
+  opacity: 0.7;
+  margin-right: 4px;
 }
 .zone-close {
-  background: transparent;
-  color: var(--zone-color, #ffa830);
-  border: 1px solid color-mix(in srgb, var(--zone-color, #ffa830) 50%, transparent);
-  border-radius: 6px;
-  width: 28px;
-  height: 28px;
+  background: rgba(0, 4, 6, 0.55);
+  border: 1px solid var(--tron);
+  border-radius: 0;
+  color: var(--tron);
+  font-family: 'Orbitron', sans-serif;
+  width: 30px;
+  height: 30px;
   cursor: pointer;
   font-size: 14px;
   line-height: 1;
+  box-shadow: 0 0 8px color-mix(in srgb, var(--tron) 35%, transparent);
+  transition: background 120ms linear, box-shadow 120ms linear;
 }
-.zone-close:hover { background: color-mix(in srgb, var(--zone-color, #ffa830) 14%, transparent); }
+.zone-close:hover {
+  background: var(--tron-dim);
+  box-shadow: 0 0 14px color-mix(in srgb, var(--tron) 60%, transparent);
+}
 
-.zone-content { padding: 18px; }
+.zone-content { padding: 22px; }
 .zone-blurb {
-  font-size: 13px;
-  line-height: 1.55;
-  margin: 0 0 16px;
-  color: #d8c8a0;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 12px;
+  line-height: 1.7;
+  letter-spacing: 0.04em;
+  color: color-mix(in srgb, var(--tron) 50%, #d8e8f2);
+  margin: 0 0 22px;
+  padding: 10px 12px;
+  border-left: 2px solid var(--tron);
+  background: color-mix(in srgb, var(--tron) 6%, transparent);
 }
+.zone-blurb::before {
+  content: '> ';
+  color: var(--tron);
+  font-weight: bold;
+}
+
 .zone-label {
   display: flex;
   justify-content: space-between;
+  align-items: baseline;
+  font-family: 'Orbitron', sans-serif;
+  font-weight: 500;
   font-size: 10px;
-  letter-spacing: 0.2em;
+  letter-spacing: 0.32em;
   text-transform: uppercase;
-  color: var(--zone-color, #ffa830);
-  margin: 12px 0 8px;
+  color: var(--tron);
+  text-shadow: 0 0 6px color-mix(in srgb, var(--tron) 50%, transparent);
+  border-bottom: 1px dashed var(--tron-edge);
+  padding-bottom: 6px;
+  margin: 14px 0 12px;
 }
-.zone-value { opacity: 0.85; }
+.zone-value {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 14px;
+  letter-spacing: 0.1em;
+  color: #fff;
+  text-shadow: 0 0 8px var(--tron);
+  opacity: 1;
+}
 
 .zone-slider {
   width: 100%;
   appearance: none;
   height: 4px;
-  background: rgba(255, 220, 180, 0.12);
-  border-radius: 2px;
+  background: color-mix(in srgb, var(--tron) 18%, transparent);
+  border: 1px solid var(--tron-edge);
+  border-radius: 0;
   outline: none;
 }
 .zone-slider::-webkit-slider-thumb {
   appearance: none;
   width: 16px;
   height: 16px;
-  border-radius: 50%;
-  background: var(--zone-color, #ffa830);
-  box-shadow: 0 0 8px var(--zone-color, #ffa830);
+  border-radius: 0;
+  background: var(--tron);
+  box-shadow: 0 0 10px var(--tron);
   cursor: pointer;
 }
 .zone-slider::-moz-range-thumb {
   width: 16px;
   height: 16px;
-  border-radius: 50%;
-  background: var(--zone-color, #ffa830);
+  border-radius: 0;
+  background: var(--tron);
   border: none;
-  box-shadow: 0 0 8px var(--zone-color, #ffa830);
+  box-shadow: 0 0 10px var(--tron);
   cursor: pointer;
 }
 
 .zone-readout {
   margin-top: 14px;
+  font-family: 'Orbitron', sans-serif;
+  font-weight: 500;
   font-size: 11px;
-  letter-spacing: 0.16em;
+  letter-spacing: 0.24em;
   text-transform: uppercase;
-  color: #b8a878;
+  color: color-mix(in srgb, var(--tron) 70%, #d8e8f2);
   text-align: center;
 }
-.zone-readout strong { color: var(--zone-color, #ffa830); }
+.zone-readout strong { color: var(--tron); text-shadow: 0 0 6px var(--tron); }
 .zone-readout-warn { color: #ffd23a; text-shadow: 0 0 8px #ffd23a55; }
-.zone-readout-alert { color: #c8210a; text-shadow: 0 0 8px #c8210a; animation: hudPulse 1.2s ease-in-out infinite; }
+.zone-readout-alert { color: #ff5a3a; text-shadow: 0 0 8px #ff5a3a; animation: hudPulse 1.2s ease-in-out infinite; }
 
 .zone-row {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
-  margin-top: 6px;
+  gap: 10px;
+  margin-top: 10px;
 }
 .zone-chip {
-  background: transparent;
-  color: #b8a878;
-  border: 1px solid color-mix(in srgb, var(--zone-color, #ffa830) 35%, transparent);
-  border-radius: 6px;
-  padding: 8px 12px;
+  font-family: 'Orbitron', sans-serif;
+  font-weight: 500;
   font-size: 11px;
-  letter-spacing: 0.16em;
-  font-family: inherit;
+  letter-spacing: 0.22em;
+  color: var(--tron);
+  background: rgba(0, 4, 6, 0.55);
+  border: 1px solid var(--tron);
+  border-radius: 0;
+  padding: 12px 10px;
   cursor: pointer;
   text-transform: uppercase;
   flex: 1 1 auto;
   min-width: 64px;
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--tron) 25%, transparent),
+    inset 0 0 12px color-mix(in srgb, var(--tron) 10%, transparent),
+    0 0 10px color-mix(in srgb, var(--tron) 25%, transparent);
+  position: relative;
+  transition: color 120ms linear, background 120ms linear, text-shadow 120ms linear, box-shadow 120ms linear;
+}
+.zone-chip::before,
+.zone-chip::after {
+  content: '';
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  pointer-events: none;
+}
+.zone-chip::before {
+  top: -2px;
+  left: -2px;
+  border-top: 2px solid var(--tron);
+  border-left: 2px solid var(--tron);
+}
+.zone-chip::after {
+  bottom: -2px;
+  right: -2px;
+  border-bottom: 2px solid var(--tron);
+  border-right: 2px solid var(--tron);
+}
+.zone-chip:hover {
+  background: color-mix(in srgb, var(--tron) 14%, transparent);
+  color: #fff;
+  text-shadow: 0 0 10px var(--tron);
 }
 .zone-chip.active {
-  background: color-mix(in srgb, var(--zone-color, #ffa830) 18%, transparent);
-  border-color: var(--zone-color, #ffa830);
-  color: #fff;
-  box-shadow: 0 0 12px color-mix(in srgb, var(--zone-color, #ffa830) 50%, transparent);
+  background: var(--tron);
+  border-color: var(--tron);
+  color: #001214;
+  text-shadow: none;
+  box-shadow:
+    0 0 0 1px var(--tron),
+    0 0 22px color-mix(in srgb, var(--tron) 70%, transparent),
+    inset 0 0 14px rgba(255, 255, 255, 0.22);
 }
 
 .zone-pill {
   flex: 1;
   text-align: center;
   padding: 8px 4px;
+  font-family: 'Orbitron', sans-serif;
   font-size: 11px;
-  letter-spacing: 0.2em;
-  border: 1px solid rgba(255, 220, 180, 0.10);
-  border-radius: 4px;
-  color: #b8a878;
+  letter-spacing: 0.24em;
+  border: 1px solid var(--tron-edge);
+  border-radius: 0;
+  color: color-mix(in srgb, var(--tron) 60%, #d8e8f2);
+  background: rgba(0, 4, 6, 0.4);
 }
 .zone-pill.active {
-  border-color: var(--zone-color, #ffa830);
-  color: #100502;
-  background: var(--zone-color, #ffa830);
-  box-shadow: 0 0 12px var(--zone-color, #ffa830);
+  border-color: var(--tron);
+  color: #001214;
+  background: var(--tron);
+  box-shadow: 0 0 14px var(--tron), inset 0 0 12px rgba(255,255,255,0.2);
 }
 
 .zone-bigreadout {
+  font-family: 'Orbitron', sans-serif;
+  font-weight: 700;
   font-size: 38px;
-  letter-spacing: 0.08em;
-  color: var(--zone-color, #ffa830);
-  text-shadow: 0 0 16px var(--zone-color, #ffa830);
+  letter-spacing: 0.12em;
+  color: var(--tron);
+  text-shadow: 0 0 16px var(--tron), 0 0 32px color-mix(in srgb, var(--tron) 50%, transparent);
   text-align: center;
   margin: 8px 0 6px;
 }

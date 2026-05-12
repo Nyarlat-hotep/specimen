@@ -1,8 +1,9 @@
 import { useMemo, useRef } from 'react'
 import { useFrame } from '@react-three/fiber'
-import { RoundedBox } from '@react-three/drei'
+import { Edges } from '@react-three/drei'
 import * as THREE from 'three'
 import { ZONES_BY_FLOOR } from '../../../utils/isoMath.js'
+import { Wire } from '../../wire.jsx'
 
 // Lathe profile (rotated around Y) for the optical column — flanged base,
 // mid collar, capped top. Replaces the old flat box.
@@ -67,9 +68,8 @@ export function Microscope({ onClick, active }) {
   useFrame((state) => {
     const t = state.clock.elapsedTime
     if (lensRef.current) {
-      lensRef.current.material.emissiveIntensity = 1.6 + Math.sin(t * 1.4) * 0.4
-    }
-    if (groupRef.current && !active) {
+      const k = 0.7 + Math.sin(t * 1.4) * 0.2
+      lensRef.current.material.color.setRGB(0.29 * k, 0.815 * k, 0.41 * k)
     }
   })
 
@@ -87,121 +87,105 @@ export function Microscope({ onClick, active }) {
       onPointerOver={() => (document.body.style.cursor = 'pointer')}
       onPointerOut={() => (document.body.style.cursor = '')}
     >
-      {/* Chamfered base plinth */}
-      <RoundedBox args={[2.2, 0.12, 1.6]} radius={0.04} smoothness={3} position={[0, 0.06, 0]}>
-        <meshStandardMaterial color="#06150a" emissive={z.color} emissiveIntensity={0.45} />
-      </RoundedBox>
+      {/* Plinth */}
+      <mesh position={[0, 0.06, 0]}>
+        <boxGeometry args={[2.2, 0.12, 1.6]} />
+        <Wire color={z.color} />
+      </mesh>
 
       {/* Glow trim along plinth front edge */}
       <mesh position={[0, 0.115, 0.79]}>
         <boxGeometry args={[2.18, 0.012, 0.018]} />
-        <meshStandardMaterial color="#000" emissive={z.color} emissiveIntensity={3} toneMapped={false} />
+        <meshBasicMaterial color={z.color} toneMapped={false} />
       </mesh>
 
       {/* Indicator beads on plinth front */}
       {[-0.6, -0.3, 0, 0.3, 0.6].map((x, i) => (
         <mesh key={i} position={[x, 0.135, 0.7]}>
-          <sphereGeometry args={[0.026, 12, 12]} />
-          <meshStandardMaterial
-            color="#000"
-            emissive={i % 2 ? '#3fcfd0' : '#4ad068'}
-            emissiveIntensity={2.5}
-            toneMapped={false}
-          />
+          <sphereGeometry args={[0.026, 8, 6]} />
+          <meshBasicMaterial color={i % 2 ? '#3fcfd0' : '#4ad068'} toneMapped={false} />
         </mesh>
       ))}
 
       {/* Side data screen on plinth */}
       <mesh position={[-1.105, 0.085, 0.2]} rotation={[0, -Math.PI / 2, 0]}>
         <planeGeometry args={[0.45, 0.08]} />
-        <meshStandardMaterial color="#000" emissive={z.color} emissiveIntensity={1.4} toneMapped={false} />
+        <meshBasicMaterial color={z.color} toneMapped={false} />
       </mesh>
 
-      {/* Stage platform — chamfered */}
-      <RoundedBox args={[1.6, 0.16, 1.2]} radius={0.05} smoothness={3} position={[0, 0.20, 0]}>
-        <meshStandardMaterial color="#0a2412" emissive={z.color} emissiveIntensity={0.7} />
-      </RoundedBox>
+      {/* Stage platform */}
+      <mesh position={[0, 0.20, 0]}>
+        <boxGeometry args={[1.6, 0.16, 1.2]} />
+        <Wire color={z.color} />
+      </mesh>
 
       {/* Stage corner pegs */}
       {[[-0.7, 0.5], [0.7, 0.5], [-0.7, -0.5], [0.7, -0.5]].map(([x, zz], i) => (
         <mesh key={i} position={[x, 0.32, zz]}>
           <cylinderGeometry args={[0.04, 0.05, 0.08, 12]} />
-          <meshStandardMaterial color="#000" emissive={z.color} emissiveIntensity={2} toneMapped={false} />
+          <Wire color={z.color} />
         </mesh>
       ))}
 
       {/* Specimen disc */}
       <mesh ref={lensRef} position={[0, 0.30, 0]}>
         <cylinderGeometry args={[0.34, 0.34, 0.04, 32]} />
-        <meshStandardMaterial color="#020404" emissive="#4ad068" emissiveIntensity={1.6} toneMapped={false} />
+        <meshBasicMaterial color="#4ad068" toneMapped={false} />
       </mesh>
 
-      {/* Glass dome over specimen — hemisphere */}
+      {/* Glass dome over specimen — wireframe hemisphere */}
       <mesh position={[0, 0.32, 0]}>
-        <sphereGeometry args={[0.34, 32, 16, 0, Math.PI * 2, 0, Math.PI / 2]} />
-        <meshStandardMaterial
-          color="#3fcfd0"
-          emissive="#3fcfd0"
-          emissiveIntensity={0.25}
-          transparent
-          opacity={0.16}
-          roughness={0.1}
-          metalness={0.4}
-          depthWrite={false}
-        />
+        <sphereGeometry args={[0.34, 24, 12, 0, Math.PI * 2, 0, Math.PI / 2]} />
+        <meshBasicMaterial color="#3fcfd0" wireframe toneMapped={false} transparent opacity={0.55} />
       </mesh>
 
       {/* Sculpted column (lathe) */}
       <mesh position={[-0.55, 0.12, -0.35]}>
-        <latheGeometry args={[COLUMN_PROFILE, 32]} />
-        <meshStandardMaterial color="#0a1a14" emissive={z.color} emissiveIntensity={0.7} />
+        <latheGeometry args={[COLUMN_PROFILE, 24]} />
+        <Wire color={z.color} />
       </mesh>
 
       {/* Side knob on column */}
       <mesh position={[-0.40, 0.45, -0.35]} rotation={[0, 0, Math.PI / 2]}>
         <cylinderGeometry args={[0.06, 0.06, 0.06, 16]} />
-        <meshStandardMaterial color="#0a1a14" emissive={z.color} emissiveIntensity={1.4} toneMapped={false} />
+        <Wire color={z.color} />
       </mesh>
 
-      {/* Optical arm — chamfered slab */}
-      <RoundedBox
-        args={[0.92, 0.18, 0.22]}
-        radius={0.05}
-        smoothness={3}
-        position={[-0.18, 1.18, -0.35]}
-      >
-        <meshStandardMaterial color="#0a1a14" emissive={z.color} emissiveIntensity={0.7} />
-      </RoundedBox>
+      {/* Optical arm */}
+      <mesh position={[-0.18, 1.18, -0.35]}>
+        <boxGeometry args={[0.92, 0.18, 0.22]} />
+        <Wire color={z.color} />
+      </mesh>
 
       {/* Arm vent slats (front face) */}
       {[-0.05, 0.05, 0.15].map((x, i) => (
         <mesh key={i} position={[x, 1.18, -0.235]}>
           <boxGeometry args={[0.04, 0.09, 0.005]} />
-          <meshStandardMaterial color="#000" emissive={z.color} emissiveIntensity={1.5} toneMapped={false} />
+          <meshBasicMaterial color={z.color} toneMapped={false} />
         </mesh>
       ))}
 
       {/* Eyepiece (lathe) — angled toward viewer */}
       <mesh position={[0.20, 1.10, -0.35]} rotation={[0, 0, -0.4]}>
-        <latheGeometry args={[EYEPIECE_PROFILE, 24]} />
-        <meshStandardMaterial color="#02100a" emissive="#3fcfd0" emissiveIntensity={1.4} toneMapped={false} />
+        <latheGeometry args={[EYEPIECE_PROFILE, 20]} />
+        <Wire color="#3fcfd0" />
       </mesh>
 
       {/* Objective lens (lathe) — wide cap below, narrow neck up to arm */}
       <mesh position={[0, 0.41, 0]}>
-        <latheGeometry args={[OBJECTIVE_PROFILE, 24]} />
-        <meshStandardMaterial color="#02100a" emissive={z.color} emissiveIntensity={1.0} toneMapped={false} />
+        <latheGeometry args={[OBJECTIVE_PROFILE, 20]} />
+        <Wire color={z.color} />
       </mesh>
 
       {/* Cable conduit base → arm */}
       <mesh geometry={cableGeom}>
-        <meshStandardMaterial color="#01080a" emissive={z.color} emissiveIntensity={0.35} />
+        <meshBasicMaterial color={z.color} toneMapped={false} />
       </mesh>
 
       {/* Hit zone */}
       <mesh position={[0, 0.6, 0]}>
         <boxGeometry args={[2.4, 1.6, 1.8]} />
-        <meshBasicMaterial transparent opacity={0} depthWrite={false} />
+        <meshBasicMaterial colorWrite={false} depthWrite={false} />
       </mesh>
     </group>
   )

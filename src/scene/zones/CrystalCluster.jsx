@@ -1,6 +1,6 @@
 import { useMemo, useRef } from 'react'
 import { useFrame } from '@react-three/fiber'
-import { RoundedBox } from '@react-three/drei'
+import { Edges } from '@react-three/drei'
 import * as THREE from 'three'
 import { ZONES } from '../../utils/isoMath.js'
 
@@ -50,10 +50,11 @@ function Crystal({ x, color, phase, scale, selected, dimmed, onSelect, index }) 
       wireRef.current.scale.copy(ref.current.scale)
     }
   })
-  const intensity = dimmed ? 0.6 : selected ? 4.0 : 2.4
+  const opacity = dimmed ? 0.35 : selected ? 1 : 0.85
 
   return (
     <group>
+      {/* Black fill so edges pop against bg without z-fighting */}
       <mesh
         ref={ref}
         position={[x, 0.7, 0]}
@@ -63,16 +64,11 @@ function Crystal({ x, color, phase, scale, selected, dimmed, onSelect, index }) 
         }}
       >
         <octahedronGeometry args={[0.28, 0]} />
-        <meshStandardMaterial
-          color="#020404"
-          emissive={color}
-          emissiveIntensity={intensity}
-          toneMapped={false}
-        />
+        <meshBasicMaterial color="#000" />
       </mesh>
-      {/* Wireframe halo for crisp silhouette */}
+      {/* Wire cage — the visible crystal */}
       <lineSegments ref={wireRef} geometry={edgesGeom} position={[x, 0.7, 0]}>
-        <lineBasicMaterial color={color} toneMapped={false} transparent opacity={0.6} />
+        <lineBasicMaterial color={color} toneMapped={false} transparent opacity={opacity} />
       </lineSegments>
     </group>
   )
@@ -81,15 +77,16 @@ function Crystal({ x, color, phase, scale, selected, dimmed, onSelect, index }) 
 function Pedestal({ x, color }) {
   return (
     <group position={[x, 0.12, 0]}>
-      {/* Stepped tower */}
+      {/* Stepped tower — silhouette edges only */}
       <mesh>
-        <latheGeometry args={[PEDESTAL_PROFILE, 24]} />
-        <meshStandardMaterial color="#06150a" emissive={color} emissiveIntensity={0.7} />
+        <latheGeometry args={[PEDESTAL_PROFILE, 14]} />
+        <meshBasicMaterial color="#000" />
+        <Edges color={color} toneMapped={false} />
       </mesh>
       {/* Glowing top ring */}
       <mesh position={[0, 0.34, 0]} rotation={[Math.PI / 2, 0, 0]}>
         <torusGeometry args={[0.15, 0.012, 8, 28]} />
-        <meshStandardMaterial color="#000" emissive={color} emissiveIntensity={2.5} toneMapped={false} />
+        <meshBasicMaterial color={color} toneMapped={false} />
       </mesh>
     </group>
   )
@@ -99,12 +96,6 @@ export function CrystalCluster({ onClick, active, selectedIndex, onSelectCrystal
   const groupRef = useRef()
   const center = ZONES.CRYSTALS.center
 
-  useFrame((state) => {
-    const t = state.clock.elapsedTime
-    if (groupRef.current && !active) {
-    }
-  })
-
   const onZonePointer = (e) => {
     if (!onClick) return
     e.stopPropagation()
@@ -113,39 +104,34 @@ export function CrystalCluster({ onClick, active, selectedIndex, onSelectCrystal
 
   return (
     <group ref={groupRef} position={center} onClick={onZonePointer}>
-      {/* Chamfered plinth */}
-      <RoundedBox
-        args={[3.4, 0.16, 0.9]}
-        radius={0.05}
-        smoothness={3}
+      {/* Plinth */}
+      <mesh
         position={[0, 0.08, 0]}
         onPointerOver={() => (document.body.style.cursor = 'pointer')}
         onPointerOut={() => (document.body.style.cursor = '')}
       >
-        <meshStandardMaterial
-          color="#06150a"
-          emissive="#4ad068"
-          emissiveIntensity={0.4}
-        />
-      </RoundedBox>
+        <boxGeometry args={[3.4, 0.16, 0.9]} />
+        <meshBasicMaterial color="#000" />
+        <Edges color="#4ad068" toneMapped={false} />
+      </mesh>
 
       {/* Plinth front trim */}
       <mesh position={[0, 0.155, 0.44]}>
         <boxGeometry args={[3.38, 0.012, 0.018]} />
-        <meshStandardMaterial color="#000" emissive="#4ad068" emissiveIntensity={3} toneMapped={false} />
+        <meshBasicMaterial color="#4ad068" toneMapped={false} />
       </mesh>
 
       {/* Plinth back trim */}
       <mesh position={[0, 0.155, -0.44]}>
         <boxGeometry args={[3.38, 0.012, 0.018]} />
-        <meshStandardMaterial color="#000" emissive="#4ad068" emissiveIntensity={2.4} toneMapped={false} />
+        <meshBasicMaterial color="#2a8a3e" toneMapped={false} />
       </mesh>
 
       {/* Index beads at plinth ends */}
       {[-1.65, 1.65].map((x, i) => (
         <mesh key={i} position={[x, 0.18, 0.36]}>
-          <sphereGeometry args={[0.03, 12, 12]} />
-          <meshStandardMaterial color="#000" emissive="#4ad068" emissiveIntensity={2.6} toneMapped={false} />
+          <sphereGeometry args={[0.03, 8, 6]} />
+          <meshBasicMaterial color="#4ad068" toneMapped={false} />
         </mesh>
       ))}
 
@@ -173,7 +159,7 @@ export function CrystalCluster({ onClick, active, selectedIndex, onSelectCrystal
       {/* Hit zone */}
       <mesh position={[0, 0.6, 0]}>
         <boxGeometry args={[3.6, 1.6, 1.1]} />
-        <meshBasicMaterial transparent opacity={0} depthWrite={false} />
+        <meshBasicMaterial colorWrite={false} depthWrite={false} />
       </mesh>
     </group>
   )

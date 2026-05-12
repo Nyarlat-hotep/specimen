@@ -1,5 +1,6 @@
 import { Canvas } from '@react-three/fiber'
 import { EffectComposer, Bloom, Vignette } from '@react-three/postprocessing'
+import { KernelSize } from 'postprocessing'
 import { IsoCamera } from './IsoCamera.jsx'
 import { GridFloor } from './GridFloor.jsx'
 import { PanController } from './PanController.jsx'
@@ -18,8 +19,8 @@ export function Scene({
 }) {
   return (
     <Canvas
-      dpr={[1, 1.5]}
-      gl={{ antialias: true, alpha: false }}
+      dpr={[1, isTouch ? 1 : 1.5]}
+      gl={{ antialias: !isTouch, alpha: false, powerPreference: 'high-performance' }}
       onPointerMissed={onBackgroundClick}
     >
       <color attach="background" args={['#080402']} />
@@ -48,9 +49,15 @@ export function Scene({
         zoneState={zoneState}
       />
 
-      <EffectComposer>
-        <Bloom intensity={1.4} luminanceThreshold={0.25} luminanceSmoothing={0.7} kernelSize={5} mipmapBlur />
-        <Vignette eskil={false} offset={0.25} darkness={0.85} />
+      <EffectComposer multisampling={0}>
+        <Bloom
+          intensity={isTouch ? 1.1 : 1.4}
+          luminanceThreshold={0.3}
+          luminanceSmoothing={0.7}
+          kernelSize={isTouch ? KernelSize.SMALL : KernelSize.MEDIUM}
+          mipmapBlur
+        />
+        {!isTouch && <Vignette eskil={false} offset={0.25} darkness={0.85} />}
       </EffectComposer>
     </Canvas>
   )

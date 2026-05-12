@@ -1,8 +1,9 @@
 import { useMemo, useRef } from 'react'
 import { useFrame } from '@react-three/fiber'
-import { RoundedBox } from '@react-three/drei'
+import { Edges } from '@react-three/drei'
 import * as THREE from 'three'
 import { ZONES_BY_FLOOR } from '../../../utils/isoMath.js'
+import { Wire } from '../../wire.jsx'
 
 const FLUID_VERT = /* glsl */ `
   varying vec2 vUv;
@@ -128,40 +129,36 @@ export function FluidDish({ onClick, active, nutrientDrops }) {
       onPointerOver={() => (document.body.style.cursor = 'pointer')}
       onPointerOut={() => (document.body.style.cursor = '')}
     >
-      {/* Chamfered plinth */}
-      <RoundedBox args={[2.0, 0.12, 2.0]} radius={0.05} smoothness={3} position={[0, 0.06, 0]}>
-        <meshStandardMaterial color="#04141a" emissive={z.color} emissiveIntensity={0.45} />
-      </RoundedBox>
+      {/* Plinth */}
+      <mesh position={[0, 0.06, 0]}>
+        <boxGeometry args={[2.0, 0.12, 2.0]} />
+        <Wire color={z.color} />
+      </mesh>
 
       {/* Plinth front trim */}
       <mesh position={[0, 0.115, 0.99]}>
         <boxGeometry args={[1.98, 0.012, 0.02]} />
-        <meshStandardMaterial color="#000" emissive={z.color} emissiveIntensity={3} toneMapped={false} />
+        <meshBasicMaterial color={z.color} toneMapped={false} />
       </mesh>
 
       {/* Indicator beads — front row */}
       {[-0.7, -0.4, -0.1, 0.2, 0.5, 0.8].map((x, i) => (
         <mesh key={i} position={[x, 0.135, 0.88]}>
-          <sphereGeometry args={[0.022, 12, 12]} />
-          <meshStandardMaterial
-            color="#000"
-            emissive={i === 1 ? '#e8501a' : z.color}
-            emissiveIntensity={2.4}
-            toneMapped={false}
-          />
+          <sphereGeometry args={[0.022, 8, 6]} />
+          <meshBasicMaterial color={i === 1 ? '#e8501a' : z.color} toneMapped={false} />
         </mesh>
       ))}
 
       {/* Lifted dish base — thin disc on a short pedestal */}
       <mesh position={[0, 0.16, 0]}>
-        <cylinderGeometry args={[0.6, 0.7, 0.06, 32]} />
-        <meshStandardMaterial color="#03101a" emissive={z.color} emissiveIntensity={0.7} />
+        <cylinderGeometry args={[0.6, 0.7, 0.06, 24]} />
+        <Wire color={z.color} />
       </mesh>
 
-      {/* Sculpted bowl (lathe) — replaces flat torus rim */}
+      {/* Sculpted bowl (lathe) */}
       <mesh position={[0, 0.19, 0]}>
-        <latheGeometry args={[BOWL_PROFILE, 48]} />
-        <meshStandardMaterial color="#031218" emissive={z.color} emissiveIntensity={1.5} toneMapped={false} />
+        <latheGeometry args={[BOWL_PROFILE, 32]} />
+        <Wire color={z.color} />
       </mesh>
 
       {/* Dish content (shader plate) — sits inside the bowl */}
@@ -180,17 +177,17 @@ export function FluidDish({ onClick, active, nutrientDrops }) {
         {/* Gantry vertical post */}
         <mesh position={[0, 0.45, 0]}>
           <cylinderGeometry args={[0.025, 0.03, 0.9, 12]} />
-          <meshStandardMaterial color="#0a1a14" emissive={z.color} emissiveIntensity={0.6} />
+          <Wire color={z.color} />
         </mesh>
         {/* Gantry horizontal extension */}
         <mesh position={[0.18, 0.85, 0]}>
           <boxGeometry args={[0.36, 0.05, 0.05]} />
-          <meshStandardMaterial color="#0a1a14" emissive={z.color} emissiveIntensity={0.6} />
+          <Wire color={z.color} />
         </mesh>
         {/* Pipette body — lathe */}
         <mesh position={[0.30, 0.20, 0]} rotation={[Math.PI, 0, 0]}>
           <latheGeometry args={[PIPETTE_PROFILE, 16]} />
-          <meshStandardMaterial color="#02100a" emissive="#3fcfd0" emissiveIntensity={1.6} toneMapped={false} />
+          <Wire color="#3fcfd0" />
         </mesh>
       </group>
 
@@ -198,33 +195,33 @@ export function FluidDish({ onClick, active, nutrientDrops }) {
       <group position={[0.40, 0.18, 0.10]}>
         <mesh position={[0, 0.40, 0]}>
           <cylinderGeometry args={[0.022, 0.026, 0.80, 12]} />
-          <meshStandardMaterial color="#0a1a14" emissive={z.color} emissiveIntensity={0.6} />
+          <Wire color={z.color} />
         </mesh>
         <mesh position={[-0.16, 0.75, 0]}>
           <boxGeometry args={[0.32, 0.045, 0.045]} />
-          <meshStandardMaterial color="#0a1a14" emissive={z.color} emissiveIntensity={0.6} />
+          <Wire color={z.color} />
         </mesh>
         <mesh position={[-0.30, 0.18, 0]} rotation={[Math.PI, 0, 0]}>
           <latheGeometry args={[PIPETTE_PROFILE, 16]} />
-          <meshStandardMaterial color="#02100a" emissive="#ffd23a" emissiveIntensity={1.6} toneMapped={false} />
+          <Wire color="#ffd23a" />
         </mesh>
       </group>
 
       {/* Coiled feed tube — base to gantry */}
       <mesh geometry={feedGeom}>
-        <meshStandardMaterial color="#01080a" emissive={z.color} emissiveIntensity={0.4} />
+        <meshBasicMaterial color={z.color} toneMapped={false} />
       </mesh>
 
       {/* Side data screen */}
       <mesh position={[1.005, 0.085, 0]} rotation={[0, Math.PI / 2, 0]}>
         <planeGeometry args={[0.5, 0.08]} />
-        <meshStandardMaterial color="#000" emissive={z.color} emissiveIntensity={1.4} toneMapped={false} />
+        <meshBasicMaterial color={z.color} toneMapped={false} />
       </mesh>
 
       {/* Hit zone */}
       <mesh position={[0, 0.5, 0]}>
         <boxGeometry args={[2.2, 1.4, 2.2]} />
-        <meshBasicMaterial transparent opacity={0} depthWrite={false} />
+        <meshBasicMaterial colorWrite={false} depthWrite={false} />
       </mesh>
     </group>
   )

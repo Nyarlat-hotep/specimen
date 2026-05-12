@@ -424,6 +424,7 @@ export function ZonePanel({ activeZone, onClose, isTouch, zoneState }) {
         <motion.aside
           key={activeZone}
           className={className}
+          data-zone={activeZone}
           initial="hidden"
           animate="shown"
           exit="hidden"

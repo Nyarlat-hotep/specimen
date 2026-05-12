@@ -1,8 +1,9 @@
 import { useMemo, useRef } from 'react'
 import { useFrame } from '@react-three/fiber'
-import { RoundedBox } from '@react-three/drei'
+import { Edges } from '@react-three/drei'
 import * as THREE from 'three'
 import { ZONES_BY_FLOOR } from '../../../utils/isoMath.js'
+import { Wire } from '../../wire.jsx'
 
 // Lathe profile for the tube cap (top + bottom) — flange ring around the glass.
 const CAP_PROFILE = [
@@ -104,71 +105,64 @@ export function Classifier({ onClick, active, sampleIndex }) {
       onPointerOver={() => (document.body.style.cursor = 'pointer')}
       onPointerOut={() => (document.body.style.cursor = '')}
     >
-      {/* Chamfered plinth */}
-      <RoundedBox args={[2.0, 0.12, 1.6]} radius={0.05} smoothness={3} position={[0, 0.06, 0]}>
-        <meshStandardMaterial color="#1a1404" emissive={z.color} emissiveIntensity={0.5} />
-      </RoundedBox>
+      {/* Plinth */}
+      <mesh position={[0, 0.06, 0]}>
+        <boxGeometry args={[2.0, 0.12, 1.6]} />
+        <Wire color={z.color} />
+      </mesh>
 
       {/* Plinth front trim */}
       <mesh position={[0, 0.115, 0.79]}>
         <boxGeometry args={[1.98, 0.012, 0.018]} />
-        <meshStandardMaterial color="#000" emissive={z.color} emissiveIntensity={3} toneMapped={false} />
+        <meshBasicMaterial color={z.color} toneMapped={false} />
       </mesh>
 
-      {/* Console body — chamfered slab */}
-      <RoundedBox args={[1.8, 0.4, 1.2]} radius={0.06} smoothness={3} position={[0, 0.32, 0]}>
-        <meshStandardMaterial color="#150f04" emissive={z.color} emissiveIntensity={0.4} />
-      </RoundedBox>
+      {/* Console body */}
+      <mesh position={[0, 0.32, 0]}>
+        <boxGeometry args={[1.8, 0.4, 1.2]} />
+        <Wire color={z.color} />
+      </mesh>
 
-      {/* Tilted control panel — front sloped face with screens */}
+      {/* Tilted control panel */}
       <group position={[0, 0.50, 0.55]} rotation={[-0.4, 0, 0]}>
-        <RoundedBox args={[1.5, 0.36, 0.05]} radius={0.03} smoothness={3}>
-          <meshStandardMaterial color="#0a0700" emissive={z.color} emissiveIntensity={0.6} />
-        </RoundedBox>
+        <mesh>
+          <boxGeometry args={[1.5, 0.36, 0.05]} />
+          <Wire color={z.color} />
+        </mesh>
         {/* Two readout screens */}
         <mesh position={[-0.40, 0.05, 0.04]}>
           <planeGeometry args={[0.45, 0.18]} />
-          <meshStandardMaterial color="#000" emissive={tint} emissiveIntensity={1.5} toneMapped={false} />
+          <meshBasicMaterial color={tint} toneMapped={false} />
         </mesh>
         <mesh position={[0.18, 0.05, 0.04]}>
           <planeGeometry args={[0.30, 0.18]} />
-          <meshStandardMaterial color="#000" emissive="#3fcfd0" emissiveIntensity={1.5} toneMapped={false} />
+          <meshBasicMaterial color="#3fcfd0" toneMapped={false} />
         </mesh>
         {/* Bottom-row knobs */}
         {[-0.55, -0.40, -0.25, 0.45, 0.60].map((x, i) => (
           <mesh key={i} position={[x, -0.10, 0.04]}>
             <latheGeometry args={[KNOB_PROFILE, 16]} />
-            <meshStandardMaterial color="#0a0700" emissive={z.color} emissiveIntensity={1.6} toneMapped={false} />
+            <Wire color={z.color} />
           </mesh>
         ))}
       </group>
 
       {/* Tube base cap (lathe) */}
       <mesh position={[0, 0.52, 0]}>
-        <latheGeometry args={[CAP_PROFILE, 32]} />
-        <meshStandardMaterial color="#0a0700" emissive={z.color} emissiveIntensity={1.0} toneMapped={false} />
+        <latheGeometry args={[CAP_PROFILE, 24]} />
+        <Wire color={z.color} />
       </mesh>
 
-      {/* Glass tube around helix */}
+      {/* Glass tube around helix — wireframe cylinder */}
       <mesh position={[0, 1.05, 0]}>
-        <cylinderGeometry args={[0.30, 0.30, 1.4, 32, 1, true]} />
-        <meshStandardMaterial
-          color={tint}
-          emissive={tint}
-          emissiveIntensity={0.4}
-          transparent
-          opacity={0.18}
-          side={THREE.DoubleSide}
-          depthWrite={false}
-          metalness={0.2}
-          roughness={0.05}
-        />
+        <cylinderGeometry args={[0.30, 0.30, 1.4, 16, 1, true]} />
+        <meshBasicMaterial color={tint} wireframe transparent opacity={0.55} side={THREE.DoubleSide} toneMapped={false} />
       </mesh>
 
       {/* Tube top cap (lathe, flipped) */}
       <mesh position={[0, 1.76, 0]} rotation={[Math.PI, 0, 0]}>
-        <latheGeometry args={[CAP_PROFILE, 32]} />
-        <meshStandardMaterial color="#0a0700" emissive={z.color} emissiveIntensity={1.0} toneMapped={false} />
+        <latheGeometry args={[CAP_PROFILE, 24]} />
+        <Wire color={z.color} />
       </mesh>
 
       {/* Helix */}
@@ -184,26 +178,21 @@ export function Classifier({ onClick, active, sampleIndex }) {
 
       {/* Cable conduit */}
       <mesh geometry={cableGeom}>
-        <meshStandardMaterial color="#01080a" emissive={z.color} emissiveIntensity={0.35} />
+        <meshBasicMaterial color={z.color} toneMapped={false} />
       </mesh>
 
       {/* Side indicator beads */}
       {[-0.4, -0.15, 0.10, 0.35].map((x, i) => (
         <mesh key={i} position={[x, 0.13, 0.7]}>
-          <sphereGeometry args={[0.024, 12, 12]} />
-          <meshStandardMaterial
-            color="#000"
-            emissive={i === 2 ? '#c8210a' : z.color}
-            emissiveIntensity={2.4}
-            toneMapped={false}
-          />
+          <sphereGeometry args={[0.024, 8, 6]} />
+          <meshBasicMaterial color={i === 2 ? '#c8210a' : z.color} toneMapped={false} />
         </mesh>
       ))}
 
       {/* Hit zone */}
       <mesh position={[0, 0.8, 0]}>
         <boxGeometry args={[2.2, 2.0, 1.8]} />
-        <meshBasicMaterial transparent opacity={0} depthWrite={false} />
+        <meshBasicMaterial colorWrite={false} depthWrite={false} />
       </mesh>
     </group>
   )

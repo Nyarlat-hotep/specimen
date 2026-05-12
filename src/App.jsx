@@ -1,4 +1,4 @@
-import { Suspense, useCallback, useEffect, useRef, useState } from 'react'
+import { Suspense, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Vector3 } from 'three'
 import { Scene } from './scene/Scene.jsx'
 import { HUD } from './ui/HUD.jsx'
@@ -40,17 +40,22 @@ export default function App() {
     return () => window.removeEventListener('keydown', onKey)
   }, [])
 
-  const zoneState = {
+  const addNutrient = useCallback(() => setNutrientDrops((n) => n + 1), [])
+
+  const zoneState = useMemo(() => ({
     anomalyDepth, setAnomalyDepth,
     eqChannel, setEqChannel,
     crystalIndex, onSelectCrystal: setCrystalIndex,
-    nutrientDrops, addNutrient: () => setNutrientDrops((n) => n + 1),
+    nutrientDrops, addNutrient,
     classifierSample, setClassifierSample,
     spectralBand, setSpectralBand,
     timelinePos, setTimelinePos,
     audioPlaying, setAudioPlaying,
     mapFocus, setMapFocus,
-  }
+  }), [
+    anomalyDepth, eqChannel, crystalIndex, nutrientDrops, classifierSample,
+    spectralBand, timelinePos, audioPlaying, mapFocus, addNutrient,
+  ])
 
   const panEnabled = !activeZone
 

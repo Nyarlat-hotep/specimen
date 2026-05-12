@@ -1,9 +1,10 @@
 import { useRef, useMemo, useState, useEffect } from 'react'
 import { useFrame } from '@react-three/fiber'
-import { Text, RoundedBox } from '@react-three/drei'
+import { Text, Edges } from '@react-three/drei'
 import * as THREE from 'three'
 import { createNoise2D } from 'simplex-noise'
 import { ZONES } from '../../utils/isoMath.js'
+import { Wire } from '../wire.jsx'
 
 function makeRidgeFbm(noise2D) {
   return (x, y, freq) => {
@@ -87,23 +88,23 @@ function SensorPylon({ x, z, color, tiltSign }) {
       {/* Vertical post */}
       <mesh position={[0, 0.40, 0]}>
         <cylinderGeometry args={[0.05, 0.06, 0.8, 12]} />
-        <meshStandardMaterial color="#0a1a14" emissive={color} emissiveIntensity={0.7} />
+        <Wire color={color} />
       </mesh>
       {/* Knuckle mount */}
       <mesh position={[0, 0.80, 0]}>
-        <sphereGeometry args={[0.10, 16, 16]} />
-        <meshStandardMaterial color="#0a1a14" emissive={color} emissiveIntensity={0.8} />
+        <sphereGeometry args={[0.10, 12, 8]} />
+        <Wire color={color} />
       </mesh>
       {/* Sensor head — tilted toward center on diagonal */}
       <group position={[0, 0.80, 0]} rotation={[Math.atan2(z, x) * 0, tiltSign * 0.5, Math.atan2(z, -x) * 0.55]}>
         <mesh rotation={[0, 0, Math.PI / 2]} position={[-0.18, 0, 0]}>
           <latheGeometry args={[SENSOR_PROFILE, 18]} />
-          <meshStandardMaterial color="#02100a" emissive={color} emissiveIntensity={1.4} toneMapped={false} />
+          <Wire color={color} />
         </mesh>
         {/* Lens dot */}
         <mesh position={[-0.32, 0, 0]}>
-          <sphereGeometry args={[0.05, 12, 12]} />
-          <meshStandardMaterial color="#000" emissive="#c8210a" emissiveIntensity={3} toneMapped={false} />
+          <sphereGeometry args={[0.05, 8, 6]} />
+          <meshBasicMaterial color="#c8210a" toneMapped={false} />
         </mesh>
       </group>
     </group>
@@ -203,8 +204,6 @@ export function AnomalyTerrain({ onClick, active, depth = 0 }) {
     const reveal = depth >= 0.92 ? 1 : depth >= 0.7 ? (depth - 0.7) / 0.22 * 0.6 : 0
     specimenUniforms.uReveal.value += (reveal - specimenUniforms.uReveal.value) * 0.08
 
-    if (groupRef.current) {
-    }
     if (containmentRingRef.current) {
       containmentRingRef.current.rotation.z = -t * 0.1
     }
@@ -231,39 +230,30 @@ export function AnomalyTerrain({ onClick, active, depth = 0 }) {
       onPointerOver={() => (document.body.style.cursor = 'pointer')}
       onPointerOut={() => (document.body.style.cursor = '')}
     >
-      {/* Chamfered plinth */}
-      <RoundedBox
-        args={[TERRAIN_SIZE + 0.6, 0.16, TERRAIN_SIZE + 0.6]}
-        radius={0.06}
-        smoothness={3}
-        position={[0, 0.08, 0]}
-      >
-        <meshStandardMaterial color="#062b1a" emissive={c} emissiveIntensity={0.5} />
-      </RoundedBox>
+      {/* Plinth */}
+      <mesh position={[0, 0.08, 0]}>
+        <boxGeometry args={[TERRAIN_SIZE + 0.6, 0.16, TERRAIN_SIZE + 0.6]} />
+        <Wire color={c} />
+      </mesh>
 
       {/* Plinth front trim */}
       <mesh position={[0, 0.155, halfPlinth - 0.02]}>
         <boxGeometry args={[TERRAIN_SIZE + 0.5, 0.012, 0.02]} />
-        <meshStandardMaterial color="#000" emissive={c} emissiveIntensity={3} toneMapped={false} />
+        <meshBasicMaterial color={c} toneMapped={false} />
       </mesh>
 
       {/* Indicator beads — front row */}
       {[-1.6, -1.0, -0.4, 0.2, 0.8, 1.4, 2.0].map((x, i) => (
         <mesh key={i} position={[x, 0.17, halfPlinth - 0.18]}>
-          <sphereGeometry args={[0.026, 12, 12]} />
-          <meshStandardMaterial
-            color="#000"
-            emissive={i === 3 ? '#c8210a' : c}
-            emissiveIntensity={2.5}
-            toneMapped={false}
-          />
+          <sphereGeometry args={[0.026, 8, 6]} />
+          <meshBasicMaterial color={i === 3 ? '#c8210a' : c} toneMapped={false} />
         </mesh>
       ))}
 
       {/* Containment ring at the base of the terrain — slowly rotates */}
       <mesh ref={containmentRingRef} position={[0, 0.18, 0]} rotation={[-Math.PI / 2, 0, 0]}>
         <torusGeometry args={[TERRAIN_SIZE * 0.50, 0.03, 12, 64]} />
-        <meshStandardMaterial color="#000" emissive={c} emissiveIntensity={2.2} toneMapped={false} />
+        <meshBasicMaterial color={c} toneMapped={false} />
       </mesh>
 
       {/* Corner sensor pylons */}
@@ -274,14 +264,13 @@ export function AnomalyTerrain({ onClick, active, depth = 0 }) {
 
       {/* Cable conduit */}
       <mesh geometry={cableGeom}>
-        <meshStandardMaterial color="#01080a" emissive={c} emissiveIntensity={0.4} />
+        <meshBasicMaterial color={c} toneMapped={false} />
       </mesh>
 
       <mesh
         position={[0, 0.18, 0]}
         rotation={[-Math.PI / 2, 0, 0]}
         geometry={terrainGeom}
-        frustumCulled={false}
       >
         <meshBasicMaterial ref={terrainMatRef} color={CALM_COLOR} wireframe toneMapped={false} />
       </mesh>
@@ -305,13 +294,8 @@ export function AnomalyTerrain({ onClick, active, depth = 0 }) {
           ref={(el) => (markerRefs.current[i] = el)}
           position={[m.x, 0.18, m.y]}
         >
-          <sphereGeometry args={[0.06, 12, 12]} />
-          <meshStandardMaterial
-            color="#220404"
-            emissive="#c8210a"
-            emissiveIntensity={3.4}
-            toneMapped={false}
-          />
+          <sphereGeometry args={[0.06, 10, 8]} />
+          <meshBasicMaterial color="#c8210a" toneMapped={false} />
         </mesh>
       ))}
 
@@ -334,7 +318,7 @@ export function AnomalyTerrain({ onClick, active, depth = 0 }) {
       {/* Hit zone */}
       <mesh position={[0, 0.5, 0]}>
         <boxGeometry args={[TERRAIN_SIZE + 1.4, 2.2, TERRAIN_SIZE + 1.4]} />
-        <meshBasicMaterial transparent opacity={0} depthWrite={false} />
+        <meshBasicMaterial colorWrite={false} depthWrite={false} />
       </mesh>
     </group>
   )

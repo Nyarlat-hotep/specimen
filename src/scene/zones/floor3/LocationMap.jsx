@@ -1,8 +1,9 @@
 import { useRef } from 'react'
 import { useFrame } from '@react-three/fiber'
-import { Text, RoundedBox } from '@react-three/drei'
+import { Text, Edges } from '@react-three/drei'
 import * as THREE from 'three'
 import { ZONES_BY_FLOOR } from '../../../utils/isoMath.js'
+import { Wire } from '../../wire.jsx'
 
 const MAP_W = 1.8
 const MAP_H = 1.4
@@ -41,9 +42,10 @@ export function LocationMap({ onClick, active, focusSite }) {
     markerRefs.current.forEach((m, i) => {
       if (!m) return
       const isFocus = i === focusSite && active
-      m.material.emissiveIntensity = isFocus
-        ? 3.4 + Math.sin(t * 4) * 0.8
-        : 1.6 + Math.sin(t * 1.6 + i) * 0.4
+      const k = isFocus
+        ? 1.0 + Math.sin(t * 4) * 0.25
+        : 0.5 + Math.sin(t * 1.6 + i) * 0.15
+      m.material.color.setRGB(0.91 * k, 0.314 * k, 0.102 * k)
     })
     if (ringRef.current) ringRef.current.rotation.z = t * 0.2
   })
@@ -69,34 +71,36 @@ export function LocationMap({ onClick, active, focusSite }) {
       {[[-halfW + 0.10, -halfH + 0.10], [halfW - 0.10, -halfH + 0.10], [-halfW + 0.10, halfH - 0.10], [halfW - 0.10, halfH - 0.10]].map(([x, zz], i) => (
         <mesh key={i} position={[x, 0, zz]}>
           <latheGeometry args={[FOOT_PROFILE, 16]} />
-          <meshStandardMaterial color="#02141a" emissive={z.color} emissiveIntensity={0.5} />
+          <Wire color={z.color} />
         </mesh>
       ))}
 
-      {/* Chamfered table top */}
-      <RoundedBox args={[MAP_W + 0.5, 0.16, MAP_H + 0.5]} radius={0.05} smoothness={3} position={[0, 0.18, 0]}>
-        <meshStandardMaterial color="#02141a" emissive={z.color} emissiveIntensity={0.4} />
-      </RoundedBox>
+      {/* Table top */}
+      <mesh position={[0, 0.18, 0]}>
+        <boxGeometry args={[MAP_W + 0.5, 0.16, MAP_H + 0.5]} />
+        <Wire color={z.color} />
+      </mesh>
 
       {/* Edge trim glow — front + back */}
       <mesh position={[0, 0.255, halfH - 0.01]}>
         <boxGeometry args={[MAP_W + 0.46, 0.012, 0.018]} />
-        <meshStandardMaterial color="#000" emissive={z.color} emissiveIntensity={3} toneMapped={false} />
+        <meshBasicMaterial color={z.color} toneMapped={false} />
       </mesh>
       <mesh position={[0, 0.255, -halfH + 0.01]}>
         <boxGeometry args={[MAP_W + 0.46, 0.012, 0.018]} />
-        <meshStandardMaterial color="#000" emissive={z.color} emissiveIntensity={2.4} toneMapped={false} />
+        <meshBasicMaterial color={z.color} toneMapped={false} />
       </mesh>
 
       {/* Recessed inset for the map surface */}
-      <RoundedBox args={[MAP_W + 0.06, 0.04, MAP_H + 0.06]} radius={0.02} smoothness={3} position={[0, 0.27, 0]}>
-        <meshStandardMaterial color="#000" emissive={z.color} emissiveIntensity={0.3} />
-      </RoundedBox>
+      <mesh position={[0, 0.27, 0]}>
+        <boxGeometry args={[MAP_W + 0.06, 0.04, MAP_H + 0.06]} />
+        <Wire color={z.color} />
+      </mesh>
 
       {/* Map surface */}
       <mesh position={[0, 0.292, 0]} rotation={[-Math.PI / 2, 0, 0]}>
         <planeGeometry args={[MAP_W, MAP_H]} />
-        <meshStandardMaterial color="#02141a" emissive={z.color} emissiveIntensity={0.6} />
+        <meshBasicMaterial color="#000" />
       </mesh>
 
       {/* Map grid */}
@@ -105,7 +109,7 @@ export function LocationMap({ onClick, active, focusSite }) {
         return (
           <mesh key={`v${i}`} position={[xn, 0.295, 0]}>
             <boxGeometry args={[0.008, 0.005, MAP_H]} />
-            <meshStandardMaterial color="#000" emissive={z.color} emissiveIntensity={1.4} toneMapped={false} />
+            <meshBasicMaterial color={z.color} toneMapped={false} />
           </mesh>
         )
       })}
@@ -114,7 +118,7 @@ export function LocationMap({ onClick, active, focusSite }) {
         return (
           <mesh key={`h${i}`} position={[0, 0.295, zn]}>
             <boxGeometry args={[MAP_W, 0.005, 0.008]} />
-            <meshStandardMaterial color="#000" emissive={z.color} emissiveIntensity={1.4} toneMapped={false} />
+            <meshBasicMaterial color={z.color} toneMapped={false} />
           </mesh>
         )
       })}
@@ -122,7 +126,7 @@ export function LocationMap({ onClick, active, focusSite }) {
       {/* Rotating compass ring at center */}
       <mesh ref={ringRef} position={[0, 0.296, 0]} rotation={[-Math.PI / 2, 0, 0]}>
         <ringGeometry args={[0.10, 0.13, 32, 1, 0, Math.PI * 1.4]} />
-        <meshStandardMaterial color="#000" emissive={z.color} emissiveIntensity={1.6} side={THREE.DoubleSide} toneMapped={false} />
+        <meshBasicMaterial color={z.color} side={THREE.DoubleSide} toneMapped={false} />
       </mesh>
 
       {/* Sites — pylon + marker tip */}
@@ -131,12 +135,12 @@ export function LocationMap({ onClick, active, focusSite }) {
           {/* Tall pylon */}
           <mesh>
             <latheGeometry args={[PYLON_PROFILE, 12]} />
-            <meshStandardMaterial color="#02100a" emissive={z.color} emissiveIntensity={1.0} toneMapped={false} />
+            <Wire color={z.color} />
           </mesh>
           {/* Marker tip */}
           <mesh ref={(el) => (markerRefs.current[i] = el)} position={[0, 0.42, 0]}>
             <coneGeometry args={[0.08, 0.16, 6]} />
-            <meshStandardMaterial color="#020404" emissive="#e8501a" emissiveIntensity={1.6} toneMapped={false} />
+            <meshBasicMaterial color="#e8501a" toneMapped={false} />
           </mesh>
           {/* Code label */}
           <Text
@@ -156,7 +160,7 @@ export function LocationMap({ onClick, active, focusSite }) {
       {/* Hit zone */}
       <mesh position={[0, 0.4, 0]}>
         <boxGeometry args={[MAP_W + 0.8, 1.0, MAP_H + 0.8]} />
-        <meshBasicMaterial transparent opacity={0} depthWrite={false} />
+        <meshBasicMaterial colorWrite={false} depthWrite={false} />
       </mesh>
     </group>
   )

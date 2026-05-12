@@ -1,8 +1,9 @@
 import { useMemo, useRef } from 'react'
 import { useFrame } from '@react-three/fiber'
-import { RoundedBox } from '@react-three/drei'
+import { Edges } from '@react-three/drei'
 import * as THREE from 'three'
 import { ZONES_BY_FLOOR } from '../../../utils/isoMath.js'
+import { Wire } from '../../wire.jsx'
 
 const FEED_VERT = /* glsl */ `
   varying vec2 vUv;
@@ -106,10 +107,6 @@ export function Surveillance({ onClick, active }) {
   const groupRef = useRef()
   const z = ZONES_BY_FLOOR[3].FEEDS
 
-  useFrame((state) => {
-    const t = state.clock.elapsedTime
-  })
-
   const onPointer = (e) => {
     if (!onClick) return
     e.stopPropagation()
@@ -136,48 +133,46 @@ export function Surveillance({ onClick, active }) {
       {[-RACK_W / 2 + 0.10, RACK_W / 2 - 0.10].map((x, i) => (
         <mesh key={i} position={[x, 0, 0]}>
           <latheGeometry args={[FOOT_PROFILE, 16]} />
-          <meshStandardMaterial color="#02100a" emissive={z.color} emissiveIntensity={0.5} />
+          <Wire color={z.color} />
         </mesh>
       ))}
 
-      {/* Chamfered plinth */}
-      <RoundedBox args={[RACK_W + 0.2, 0.18, RACK_D + 0.4]} radius={0.05} smoothness={3} position={[0, 0.09, 0]}>
-        <meshStandardMaterial color="#02100a" emissive={z.color} emissiveIntensity={0.5} />
-      </RoundedBox>
+      {/* Plinth */}
+      <mesh position={[0, 0.09, 0]}>
+        <boxGeometry args={[RACK_W + 0.2, 0.18, RACK_D + 0.4]} />
+        <Wire color={z.color} />
+      </mesh>
 
       {/* Plinth front trim */}
       <mesh position={[0, 0.18, RACK_D / 2 + 0.19]}>
         <boxGeometry args={[RACK_W + 0.18, 0.012, 0.018]} />
-        <meshStandardMaterial color="#000" emissive={z.color} emissiveIntensity={3} toneMapped={false} />
+        <meshBasicMaterial color={z.color} toneMapped={false} />
       </mesh>
 
       {/* Indicator beads on plinth */}
       {[-0.7, -0.4, -0.1, 0.2, 0.5, 0.8].map((x, i) => (
         <mesh key={i} position={[x, 0.20, RACK_D / 2 + 0.10]}>
-          <sphereGeometry args={[0.022, 12, 12]} />
-          <meshStandardMaterial
-            color="#000"
-            emissive={i % 2 ? '#3fcfd0' : z.color}
-            emissiveIntensity={2.4}
-            toneMapped={false}
-          />
+          <sphereGeometry args={[0.022, 8, 6]} />
+          <meshBasicMaterial color={i % 2 ? '#3fcfd0' : z.color} toneMapped={false} />
         </mesh>
       ))}
 
       {/* Rack chassis */}
-      <RoundedBox args={[RACK_W, RACK_H, RACK_D]} radius={0.06} smoothness={3} position={[0, RACK_CY, 0]}>
-        <meshStandardMaterial color="#02100a" emissive={z.color} emissiveIntensity={0.4} />
-      </RoundedBox>
+      <mesh position={[0, RACK_CY, 0]}>
+        <boxGeometry args={[RACK_W, RACK_H, RACK_D]} />
+        <Wire color={z.color} />
+      </mesh>
 
       {/* Inset bezel around the screens */}
-      <RoundedBox args={[FEED_W * 2 + GAP + 0.18, FEED_H * 2 + GAP + 0.18, 0.04]} radius={0.04} smoothness={3} position={[0, RACK_CY + 0.04, RACK_D / 2 - 0.01]}>
-        <meshStandardMaterial color="#000" emissive={z.color} emissiveIntensity={0.6} />
-      </RoundedBox>
+      <mesh position={[0, RACK_CY + 0.04, RACK_D / 2 - 0.01]}>
+        <boxGeometry args={[FEED_W * 2 + GAP + 0.18, FEED_H * 2 + GAP + 0.18, 0.04]} />
+        <Wire color={z.color} />
+      </mesh>
 
       {/* Top trim glow */}
       <mesh position={[0, RACK_CY + RACK_H / 2 + 0.01, RACK_D * 0.30]}>
         <boxGeometry args={[RACK_W * 0.92, 0.012, 0.018]} />
-        <meshStandardMaterial color="#000" emissive={z.color} emissiveIntensity={3} toneMapped={false} />
+        <meshBasicMaterial color={z.color} toneMapped={false} />
       </mesh>
 
       {/* 2x2 feeds */}
@@ -190,14 +185,14 @@ export function Surveillance({ onClick, active }) {
       {[-0.6, -0.3, 0, 0.3, 0.6].map((x, i) => (
         <mesh key={i} position={[x, RACK_CY - RACK_H / 2 + 0.10, RACK_D / 2 + 0.005]}>
           <latheGeometry args={[KNOB_PROFILE, 16]} />
-          <meshStandardMaterial color="#000" emissive={z.color} emissiveIntensity={1.6} toneMapped={false} />
+          <Wire color={z.color} />
         </mesh>
       ))}
 
       {/* Hit zone */}
       <mesh position={[0, RACK_CY, 0]}>
         <boxGeometry args={[RACK_W + 0.4, RACK_H + 0.4, RACK_D + 0.5]} />
-        <meshBasicMaterial transparent opacity={0} depthWrite={false} />
+        <meshBasicMaterial colorWrite={false} depthWrite={false} />
       </mesh>
     </group>
   )

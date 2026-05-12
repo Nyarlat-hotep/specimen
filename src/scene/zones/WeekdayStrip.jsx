@@ -1,9 +1,10 @@
 import { useRef } from 'react'
 import { useFrame } from '@react-three/fiber'
-import { Text, RoundedBox } from '@react-three/drei'
+import { Text, Edges } from '@react-three/drei'
 import * as THREE from 'three'
 import { ZONES } from '../../utils/isoMath.js'
 import { WEEKDAY_LETTERS, useToday } from '../../hooks/useToday.js'
+import { Wire } from '../wire.jsx'
 
 const CELL_W = 0.36
 const CELL_H = 0.55
@@ -28,9 +29,8 @@ export function WeekdayStrip({ onClick, active }) {
   useFrame((state) => {
     const t = state.clock.elapsedTime
     if (highlightRef.current) {
-      highlightRef.current.material.emissiveIntensity = 2.4 + Math.sin(t * 2) * 0.8
-    }
-    if (groupRef.current && !active) {
+      const k = 1 + Math.sin(t * 2) * 0.25
+      highlightRef.current.material.color.setRGB(0.247 * k, 0.812 * k, 0.816 * k)
     }
   })
 
@@ -56,30 +56,32 @@ export function WeekdayStrip({ onClick, active }) {
       {[-FRAME_W / 2 + 0.10, FRAME_W / 2 - 0.10].map((x, i) => (
         <mesh key={i} position={[x, 0, 0]}>
           <latheGeometry args={[FOOT_PROFILE, 16]} />
-          <meshStandardMaterial color="#062b30" emissive="#3fcfd0" emissiveIntensity={0.5} />
+          <Wire color="#3fcfd0" />
         </mesh>
       ))}
 
-      {/* Chamfered chassis */}
-      <RoundedBox args={[FRAME_W, FRAME_H, FRAME_D]} radius={0.05} smoothness={3} position={[0, 0.18 + FRAME_H / 2, 0]}>
-        <meshStandardMaterial color="#062b30" emissive="#3fcfd0" emissiveIntensity={0.5} />
-      </RoundedBox>
+      {/* Chassis */}
+      <mesh position={[0, 0.18 + FRAME_H / 2, 0]}>
+        <boxGeometry args={[FRAME_W, FRAME_H, FRAME_D]} />
+        <Wire color="#3fcfd0" />
+      </mesh>
 
       {/* Inset bezel */}
-      <RoundedBox args={[FRAME_W * 0.94, FRAME_H * 0.86, 0.04]} radius={0.04} smoothness={3} position={[0, 0.18 + FRAME_H / 2, FRAME_D / 2 - 0.01]}>
-        <meshStandardMaterial color="#03171c" emissive="#3fcfd0" emissiveIntensity={0.5} />
-      </RoundedBox>
+      <mesh position={[0, 0.18 + FRAME_H / 2, FRAME_D / 2 - 0.01]}>
+        <boxGeometry args={[FRAME_W * 0.94, FRAME_H * 0.86, 0.04]} />
+        <Wire color="#3fcfd0" />
+      </mesh>
 
       {/* Top trim glow */}
       <mesh position={[0, 0.18 + FRAME_H + 0.01, FRAME_D * 0.30]}>
         <boxGeometry args={[FRAME_W * 0.92, 0.012, 0.018]} />
-        <meshStandardMaterial color="#000" emissive="#3fcfd0" emissiveIntensity={3} toneMapped={false} />
+        <meshBasicMaterial color="#3fcfd0" toneMapped={false} />
       </mesh>
 
       {/* Bottom trim glow */}
       <mesh position={[0, 0.18, FRAME_D * 0.30]}>
         <boxGeometry args={[FRAME_W * 0.92, 0.012, 0.018]} />
-        <meshStandardMaterial color="#000" emissive="#3fcfd0" emissiveIntensity={2.2} toneMapped={false} />
+        <meshBasicMaterial color="#2a8a8c" toneMapped={false} />
       </mesh>
 
       {/* Cells */}
@@ -88,14 +90,17 @@ export function WeekdayStrip({ onClick, active }) {
         const isToday = i === today
         return (
           <group key={i} position={[x, 0.18 + FRAME_H / 2, FRAME_D / 2 + 0.005]}>
-            <RoundedBox args={[CELL_W, CELL_H, 0.05]} radius={0.03} smoothness={3} ref={isToday ? highlightRef : null}>
-              <meshStandardMaterial
-                color={isToday ? '#062b30' : '#04181c'}
-                emissive={isToday ? '#3fcfd0' : '#0a4a52'}
-                emissiveIntensity={isToday ? 2.4 : 0.4}
-                toneMapped={false}
-              />
-            </RoundedBox>
+            <mesh ref={isToday ? highlightRef : null}>
+              <boxGeometry args={[CELL_W, CELL_H, 0.05]} />
+              {isToday ? (
+                <meshBasicMaterial color="#3fcfd0" toneMapped={false} />
+              ) : (
+                <>
+                  <meshBasicMaterial color="#000" />
+                  <Edges color="#3fcfd0" toneMapped={false} />
+                </>
+              )}
+            </mesh>
             <Text
               position={[0, 0, 0.04]}
               font={ORBITRON_FONT}
@@ -114,7 +119,7 @@ export function WeekdayStrip({ onClick, active }) {
       {/* Hit zone */}
       <mesh position={[0, 0.5, 0]}>
         <boxGeometry args={[FRAME_W + 0.4, FRAME_H + 0.6, FRAME_D + 0.5]} />
-        <meshBasicMaterial transparent opacity={0} depthWrite={false} />
+        <meshBasicMaterial colorWrite={false} depthWrite={false} />
       </mesh>
     </group>
   )
