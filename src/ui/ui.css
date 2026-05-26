@@ -186,6 +186,12 @@
   font-weight: bold;
 }
 
+.zone-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
 .zone-label {
   display: flex;
   justify-content: space-between;

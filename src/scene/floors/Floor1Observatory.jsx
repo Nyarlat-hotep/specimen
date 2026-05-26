@@ -28,8 +28,11 @@ export function Floor1Observatory({ activeZone, onZoneSelect, zoneState }) {
         active={activeZone === 'EQUALIZER'}
         channel={zoneState.eqChannel}
       />
-      <SevenSegClock onClick={onZoneSelect} active={activeZone === 'CLOCK'} />
-      <WeekdayStrip onClick={onZoneSelect} active={activeZone === 'WEEKDAY'} />
+      <SevenSegClock
+        is24Hour={zoneState.clock24h}
+        onToggleFormat={zoneState.toggleClock24h}
+      />
+      <WeekdayStrip />
       <CrystalCluster
         onClick={onZoneSelect}
         active={activeZone === 'CRYSTALS'}

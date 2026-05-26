@@ -1,8 +1,6 @@
 import { useEffect, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { findZone } from '../utils/isoMath.js'
-import { useClock } from '../hooks/useClock.js'
-import { WEEKDAY_LETTERS, useToday } from '../hooks/useToday.js'
 import { Timeline } from '../scene/zones/floor3/Timeline.jsx'
 import { LocationMap } from '../scene/zones/floor3/LocationMap.jsx'
 import { AudioRecordings } from '../scene/zones/floor3/AudioRecordings.jsx'
@@ -102,35 +100,6 @@ function EqualizerContent({ zoneState }) {
     </div>
   )
 }
-
-function ClockContent() {
-  const { hh, mm, ss, now } = useClock()
-  const tz = now.toString().match(/\(([^)]+)\)/)?.[1] || ''
-  return (
-    <div className="zone-content">
-      <p className="zone-blurb">Local time, second-precise.</p>
-      <div className="zone-bigreadout">{hh}:{mm}<span className="zone-secondary">:{ss}</span></div>
-      <div className="zone-readout">{tz}</div>
-    </div>
-  )
-}
-
-function WeekdayContent() {
-  const today = useToday()
-  const fullNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
-  return (
-    <div className="zone-content">
-      <p className="zone-blurb">Weekly cycle indicator.</p>
-      <div className="zone-bigreadout">{fullNames[today]}</div>
-      <div className="zone-row">
-        {WEEKDAY_LETTERS.map((l, i) => (
-          <span key={i} className={`zone-pill ${i === today ? 'active' : ''}`}>{l}</span>
-        ))}
-      </div>
-    </div>
-  )
-}
-
 function CrystalsContent({ zoneState }) {
   const { crystalIndex, onSelectCrystal } = zoneState
   const labels = ['SAMPLE α', 'SAMPLE β', 'SAMPLE γ', 'SAMPLE δ', 'SAMPLE ε']
@@ -138,9 +107,16 @@ function CrystalsContent({ zoneState }) {
   return (
     <div className="zone-content">
       <p className="zone-blurb">Five samples on the index. Tap one to inspect its grade.</p>
-      <div className="zone-row">
+      <div className="zone-row" style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)' }}>
         {labels.map((l, i) => (
-          <button key={i} className={`zone-chip ${crystalIndex === i ? 'active' : ''}`} onClick={() => onSelectCrystal(i)}>{l.split(' ')[1]}</button>
+          <button
+            key={i}
+            className={`zone-chip ${crystalIndex === i ? 'active' : ''}`}
+            style={{ minWidth: 0, padding: '12px 4px' }}
+            onClick={() => onSelectCrystal(i)}
+          >
+            {l.split(' ')[1]}
+          </button>
         ))}
       </div>
       {crystalIndex !== null && (
@@ -286,19 +262,18 @@ function TerminalContent() {
 
 function FeedsContent() {
   const FEEDS = [
-    { id: 'CAM-A', loc: 'CORRIDOR · NORTH ANNEX', state: 'NOMINAL'   },
-    { id: 'CAM-B', loc: 'LAB · CONTAINMENT 02',  state: 'MOVEMENT' },
-    { id: 'CAM-C', loc: 'EXTERIOR · NW3',         state: 'WEATHER'  },
-    { id: 'CAM-D', loc: 'DOOR · ANNEX ENTRY',     state: '⚠ KNOCKING'},
+    { id: 'CAM-A', loc: 'BEST OF THE WORST · BIOHAZARD, SLAUGHTER HIGH, AND KILL POINT' },
+    { id: 'CAM-B', loc: 'MODERN TALKING · CHERI CHERI LADY (SLOWED + REVERB)' },
+    { id: 'CAM-C', loc: 'CASSETTER · LOST IN A MAZE (FEAT. TIME TRAVEL)' },
+    { id: 'CAM-D', loc: 'BEST OF THE WORST · LYCAN COLONY' },
   ]
   return (
     <div className="zone-content">
-      <p className="zone-blurb">Four passive feeds. Cam-D has been registering rhythmic impacts since 03·26.</p>
+      <p className="zone-blurb">Four passive feeds. Use the rack knobs to select an active channel.</p>
       <div className="zone-list">
         {FEEDS.map((f) => (
-          <div key={f.id} className={`zone-list-row ${f.state.startsWith('⚠') ? 'warn' : ''}`}>
+          <div key={f.id} className="zone-list-row">
             <span><strong>{f.id}</strong> · {f.loc}</span>
-            <span>{f.state}</span>
           </div>
         ))}
       </div>
@@ -392,8 +367,6 @@ const CONTENT_BY_ZONE = {
   // Floor 1
   ANOMALY: AnomalyContent,
   EQUALIZER: EqualizerContent,
-  CLOCK: ClockContent,
-  WEEKDAY: WeekdayContent,
   CRYSTALS: CrystalsContent,
   // Floor 2
   MICROSCOPE: MicroscopeContent,

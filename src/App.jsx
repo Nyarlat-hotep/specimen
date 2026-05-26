@@ -21,6 +21,7 @@ export default function App() {
   const [timelinePos, setTimelinePos] = useState(0.32)
   const [audioPlaying, setAudioPlaying] = useState(null)
   const [mapFocus, setMapFocus] = useState(null)
+  const [clock24h, setClock24h] = useState(true)
 
   // Camera pan + zoom (refs so updates don't re-render the whole tree)
   const panOffsetRef = useRef(new Vector3())
@@ -52,9 +53,10 @@ export default function App() {
     timelinePos, setTimelinePos,
     audioPlaying, setAudioPlaying,
     mapFocus, setMapFocus,
+    clock24h, toggleClock24h: () => setClock24h((v) => !v),
   }), [
     anomalyDepth, eqChannel, crystalIndex, nutrientDrops, classifierSample,
-    spectralBand, timelinePos, audioPlaying, mapFocus, addNutrient,
+    spectralBand, timelinePos, audioPlaying, mapFocus, addNutrient, clock24h,
   ])
 
   const panEnabled = !activeZone

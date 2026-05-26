@@ -16,10 +16,12 @@ const std = (overrides) => ({ focusOffset: [6, 6, 6], zoom: 130, ...overrides })
 // ── Observatory zones (top of triangle) — cyan accent on EQUALIZER ─────
 const ZONES_OBSERVATORY = {
   ANOMALY:    std({ id:'ANOMALY',   title:'ANOMALY · UNKNOWN ENTITY', color:'#e8501a', center:[-6,0,-2], footprint:5,   plinth:[2.55, 2.55], zoom:110 }),
-  // EQUALIZER plinth sits below floor; the visible structure is the chassis
-  // (back, hzS=0.56) and the bars (front, hzN=0.2). Asymmetric in z.
-  EQUALIZER:  std({ id:'EQUALIZER', title:'AUDIO · CHANNEL',          color:'#3fcfd0', center:[-5,0, 4], footprint:4,   plinth:[2.365, 2.365, 0.56, 0.2] }),
-  CLOCK:      std({ id:'CLOCK',     title:'CHRONO · LOCAL TIME',      color:'#c8210a', center:[ 5,0, 3], footprint:4,   plinth:[2.0, 0.8] }),
+  // EQUALIZER plinth sits below floor; pipes run above it, so in iso the
+  // y-offset projects pipes "up-and-back" on screen. All four half-extents
+  // are bumped past the actual plinth (true halves 2.365/2.365/0.6/0.6) so
+  // every rail visually lands on the outer wireframe edge instead of inside.
+  EQUALIZER:  std({ id:'EQUALIZER', title:'AUDIO · CHANNEL',          color:'#3fcfd0', center:[-5,0, 4], footprint:4,   plinth:[2.46, 2.68, 0.56, 0.92] }),
+  CLOCK:      std({ id:'CLOCK',     title:'CHRONO · LOCAL TIME',      color:'#c8210a', center:[ 5,0, 3], footprint:4,   plinth:[2.4, 3.1, 0.8, 1.05] }),
   WEEKDAY:    std({ id:'WEEKDAY',   title:'CYCLE · WEEK',             color:'#ffa830', center:[ 6,0,-2], footprint:3.5, plinth:[1.71, 0.11], zoom:140 }),
   CRYSTALS:   std({ id:'CRYSTALS',  title:'INDEX · SAMPLES',          color:'#ffd23a', center:[ 0,0, 6], footprint:3.5, plinth:[1.7, 0.45],  zoom:140 }),
 }
@@ -98,7 +100,9 @@ export const PIPING_BY_FLOOR = {
   1: [
     ['ANOMALY',   'EQUALIZER', { rails: 2, colors: ['#e8501a', '#3fcfd0'] }],
     ['WEEKDAY',   'CLOCK'],
-    ['EQUALIZER', 'CRYSTALS'],
+    // midZ forces ZxZ so the cyan rail docks at EQUALIZER's north face —
+    // mirror of orange ANOMALY→EQUALIZER south-face dock.
+    ['EQUALIZER', 'CRYSTALS', { midZ: 5.125 }],
     ['CLOCK',     'CRYSTALS',  { rails: 2, colors: ['#c8210a', '#ffd23a'] }],
     ['ANOMALY',   'WEEKDAY'],
   ],
@@ -122,9 +126,20 @@ export const PIPING_BY_FLOOR = {
 
 // Sparse cross-district connectors — visually tie the triangle together.
 // Format: [fromDistrictId, fromZoneId, toDistrictId, toZoneId].
+// Optional 5th element: opts { color, midX, midZ }
+//   color   — override the default source-color
+//   midX    — force XzX routing with given x for the long Z run
+//   midZ    — force ZxZ routing with given z for the long X run
 export const CROSS_DISTRICT_EDGES = [
   [1, 'CRYSTALS', 3, 'MAP'],        // observatory → archive
-  [1, 'ANOMALY',  2, 'SPECTRAL'],   // observatory → bio
+  // Orange ANOMALY→SPECTRAL continues out of EQUALIZER's west face (the
+  // intra-district ANOMALY→EQUALIZER orange rail handles the inbound half).
+  // midX=-17 routes west of FLUID's east edge (-13.5) and EQUALIZER (-11).
+  [1, 'EQUALIZER', 2, 'SPECTRAL', { color: '#e8501a', midX: -17 }],
+  // Cyan mirror: EQUALIZER's east face → FEEDS (intra-district CRYSTALS rail
+  // handles the inbound half at the north face). midX=3.5 routes between
+  // CRYSTALS (east edge 2.55) and CLOCK (west edge 4.5).
+  [1, 'EQUALIZER', 3, 'FEEDS',    { color: '#3fcfd0', midX: 3.5 }],
   [2, 'VITALS',   3, 'TERMINAL'],   // bio → archive
 ]
 

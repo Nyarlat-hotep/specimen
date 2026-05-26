@@ -12,6 +12,17 @@ const CRYSTALS = [
   { x: 1.4, color: '#c8210a', phase: 2.4, scale: 0.85 },
 ]
 
+// Per-sample rotation rates [x, y, z] rad/s — each axis/speed combo is distinct.
+const SPIN_RATES = [
+  [0.0,  1.2,  0.0],   // α — single-axis Y
+  [0.9,  0.0,  0.5],   // β — X + Z, no Y
+  [1.4,  1.7,  1.1],   // γ — full 3-axis tumble
+  [2.2,  0.0, -1.6],   // δ — fast X with reverse Z
+  [0.5,  2.1, -0.3],   // ε — fast Y, slow X, slight reverse Z
+]
+const BASE_Y = 0.7
+const LIFT_Y = 1.1
+
 // Stepped pedestal lathe — three terraces narrowing as it rises.
 const PEDESTAL_PROFILE = [
   [0.30, 0.00],
@@ -34,19 +45,41 @@ function Crystal({ x, color, phase, scale, selected, dimmed, onSelect, index }) 
     return new THREE.EdgesGeometry(base)
   }, [])
 
-  useFrame((state) => {
+  const initRef = useRef(false)
+  useFrame((state, delta) => {
     const t = state.clock.elapsedTime
     if (!ref.current) return
+    if (!initRef.current) {
+      ref.current.rotation.y = phase
+      initRef.current = true
+    }
     const bob = Math.sin(t * 1.6 + phase) * 0.08
-    ref.current.position.y = 0.7 + bob
-    ref.current.rotation.y = t * 0.4 + phase
-    const target = selected ? scale * 1.4 : scale
-    ref.current.scale.x += (target - ref.current.scale.x) * 0.12
-    ref.current.scale.y = ref.current.scale.x
-    ref.current.scale.z = ref.current.scale.x
+    const targetY = (selected ? LIFT_Y : BASE_Y) + bob
+    ref.current.position.y += (targetY - ref.current.position.y) * 0.1
+
+    if (selected) {
+      const [rx, ry, rz] = SPIN_RATES[index]
+      ref.current.rotation.x += delta * rx
+      ref.current.rotation.y += delta * ry
+      ref.current.rotation.z += delta * rz
+    } else {
+      // Normalize x/z to [-π, π] so the damp toward 0 takes the short path
+      // (otherwise an accumulated 20+ rad unwinds through many visible turns).
+      const norm = (a) => {
+        let v = a % (Math.PI * 2)
+        if (v > Math.PI) v -= Math.PI * 2
+        else if (v < -Math.PI) v += Math.PI * 2
+        return v
+      }
+      ref.current.rotation.x = norm(ref.current.rotation.x) * 0.94
+      ref.current.rotation.z = norm(ref.current.rotation.z) * 0.94
+      ref.current.rotation.y += delta * 0.4
+    }
+
+    ref.current.scale.setScalar(scale)
     if (wireRef.current) {
       wireRef.current.position.y = ref.current.position.y
-      wireRef.current.rotation.y = ref.current.rotation.y
+      wireRef.current.rotation.copy(ref.current.rotation)
       wireRef.current.scale.copy(ref.current.scale)
     }
   })

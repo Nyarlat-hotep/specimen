@@ -106,11 +106,11 @@ export function Equalizer({ onClick, active, channel = 0 }) {
         )
       })}
 
-      {/* Bottom indicator beads — front row */}
-      {[-1.4, -0.7, 0, 0.7, 1.4].map((x, i) => (
+      {/* Bottom indicator beads — front row, one per channel */}
+      {[-1.4, -0.467, 0.467, 1.4].map((x, i) => (
         <mesh key={i} position={[x, -0.05, BAR_DEPTH / 2 + 0.28]}>
           <sphereGeometry args={[0.024, 8, 6]} />
-          <meshBasicMaterial color={i === 2 ? '#e8501a' : color} toneMapped={false} />
+          <meshBasicMaterial color={i === channel ? '#e8501a' : color} toneMapped={false} />
         </mesh>
       ))}
 

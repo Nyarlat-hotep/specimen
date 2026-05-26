@@ -20,7 +20,7 @@ const FOOT_PROFILE = [
 
 const ORBITRON_FONT = `${import.meta.env.BASE_URL}fonts/Orbitron-Bold.ttf`
 
-export function WeekdayStrip({ onClick, active }) {
+export function WeekdayStrip() {
   const today = useToday()
   const groupRef = useRef()
   const highlightRef = useRef()
@@ -34,24 +34,12 @@ export function WeekdayStrip({ onClick, active }) {
     }
   })
 
-  const onPointer = (e) => {
-    if (!onClick) return
-    e.stopPropagation()
-    onClick('WEEKDAY')
-  }
-
   const FRAME_W = TOTAL_W + 0.6
   const FRAME_H = CELL_H + 0.4
   const FRAME_D = 0.22
 
   return (
-    <group
-      ref={groupRef}
-      position={center}
-      onClick={onPointer}
-      onPointerOver={() => (document.body.style.cursor = 'pointer')}
-      onPointerOut={() => (document.body.style.cursor = '')}
-    >
+    <group ref={groupRef} position={center}>
       {/* Splayed feet */}
       {[-FRAME_W / 2 + 0.10, FRAME_W / 2 - 0.10].map((x, i) => (
         <mesh key={i} position={[x, 0, 0]}>
@@ -116,11 +104,6 @@ export function WeekdayStrip({ onClick, active }) {
         )
       })}
 
-      {/* Hit zone */}
-      <mesh position={[0, 0.5, 0]}>
-        <boxGeometry args={[FRAME_W + 0.4, FRAME_H + 0.6, FRAME_D + 0.5]} />
-        <meshBasicMaterial colorWrite={false} depthWrite={false} />
-      </mesh>
     </group>
   )
 }

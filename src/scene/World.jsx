@@ -69,12 +69,14 @@ function faceOffsetWorld(zone, axis, sign) {
 function CrossDistrictPiping() {
   const polylines = useMemo(() => {
     const out = []
-    for (const [fromD, fromZ, toD, toZ] of CROSS_DISTRICT_EDGES) {
+    for (const edge of CROSS_DISTRICT_EDGES) {
+      const [fromD, fromZ, toD, toZ, opts = {}] = edge
       const a = findZone(fromZ)
       const b = findZone(toZ)
       if (!a || !b || a.district.id !== fromD || b.district.id !== toD) continue
       const aw = getZoneWorldCenter(fromZ)
       const bw = getZoneWorldCenter(toZ)
+      const lineColor = opts.color || a.zone.color
 
       const sameZ = Math.abs(bw[2] - aw[2]) < 0.001
       const sameX = Math.abs(bw[0] - aw[0]) < 0.001
@@ -101,8 +103,13 @@ function CrossDistrictPiping() {
         const aXFar  = aw[0] + faceOffsetWorld(a.zone, 'x',  dx)
         const bXNear = bw[0] + faceOffsetWorld(b.zone, 'x', -dx)
         const xGap = (bXNear - aXFar) * dx
-        if (zGap >= xGap && zGap > 0) {
-          const midZ = aZFar + (bZNear - aZFar) / 2
+        const useZxZ = opts.midZ !== undefined
+          ? true
+          : opts.midX !== undefined
+            ? false
+            : zGap >= xGap && zGap > 0
+        if (useZxZ) {
+          const midZ = opts.midZ !== undefined ? opts.midZ : aZFar + (bZNear - aZFar) / 2
           points = [
             [aw[0], CROSS_PIPE_Y, aZFar],
             [aw[0], CROSS_PIPE_Y, midZ],
@@ -110,7 +117,7 @@ function CrossDistrictPiping() {
             [bw[0], CROSS_PIPE_Y, bZNear],
           ]
         } else {
-          const midX = aXFar + (bXNear - aXFar) / 2
+          const midX = opts.midX !== undefined ? opts.midX : aXFar + (bXNear - aXFar) / 2
           points = [
             [aXFar, CROSS_PIPE_Y, aw[2]],
             [midX,  CROSS_PIPE_Y, aw[2]],
@@ -119,7 +126,7 @@ function CrossDistrictPiping() {
           ]
         }
       }
-      out.push({ points, color: a.zone.color })
+      out.push({ points, color: lineColor })
     }
     return out
   }, [])
